@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vectorify – Free Image to SVG Converter</title>
+<meta name="description" content="Convert any image to a clean, scalable SVG vector for free. No signup. Instant download.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/imagetracerjs@1.2.6/imagetracer_v1.2.6.js"></script>
+
+<!-- Google AdSense placeholder – replace with your publisher ID -->
+<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0b0c10;
+    --surface:  #13141a;
+    --surface2: #1c1e27;
+    --border:   #2a2d3a;
+    --accent:   #00e5a0;
+    --accent2:  #00b87a;
+    --text:     #e8eaf0;
+    --muted:    #6b7080;
+    --danger:   #ff5a5a;
+    --radius:   14px;
+    --glow: 0 0 32px rgba(0,229,160,0.18);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    height: 64px;
+    background: rgba(11,12,16,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.3rem;
+    color: var(--text); text-decoration: none;
+  }
+  .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+
+  nav { display: flex; align-items: center; gap: 24px; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: color .2s; }
+  nav a:hover { color: var(--text); }
+
+  .btn-nav {
+    padding: 7px 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 0.875rem; font-weight: 500;
+    cursor: pointer; text-decoration: none;
+    transition: border-color .2s, background .2s;
+  }
+  .btn-nav:hover { border-color: var(--accent); background: rgba(0,229,160,0.06); color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 80px 24px 48px;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(0,229,160,0.3);
+    background: rgba(0,229,160,0.07);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    margin-bottom: 24px;
+    animation: fadein .6s ease both;
+  }
+  .hero-badge::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; } 50% { opacity: .3; }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    animation: fadein .7s ease .1s both;
+  }
+  h1 span { color: var(--accent); }
+
+  .hero-sub {
+    margin-top: 16px;
+    color: var(--muted);
+    font-size: 1.05rem;
+    font-weight: 300;
+    max-width: 480px;
+    margin-inline: auto;
+    animation: fadein .7s ease .2s both;
+  }
+
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── AD TOP ── */
+  .ad-slot {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: .08em;
+  }
+  .ad-slot-top { height: 90px; max-width: 728px; margin: 0 auto 32px; }
+  .ad-slot-side { height: 280px; width: 180px; }
+  .ad-slot-bottom { height: 90px; max-width: 728px; margin: 40px auto 0; }
+
+  /* ── MAIN TOOL ── */
+  .tool-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  @media (min-width: 900px) {
+    .tool-wrapper { grid-template-columns: 1fr 260px; }
+  }
+
+  .tool-main { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── UPLOAD ZONE ── */
+  .upload-zone {
+    position: relative;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 56px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .25s, background .25s;
+    animation: fadein .8s ease .3s both;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(0,229,160,0.04);
+  }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+
+  .upload-icon {
+    width: 56px; height: 56px;
+    margin: 0 auto 16px;
+    border-radius: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    transition: transform .2s;
+  }
+  .upload-zone:hover .upload-icon { transform: scale(1.08); }
+
+  .upload-label { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+  .upload-sub { color: var(--muted); font-size: 0.85rem; margin-top: 6px; }
+  .upload-types {
+    display: inline-flex; gap: 8px; margin-top: 16px;
+  }
+  .chip {
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  /* ── SETTINGS SIDEBAR ── */
+  .sidebar {
+    display: flex; flex-direction: column; gap: 16px;
+    animation: fadein .8s ease .4s both;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { font-size: 0.82rem; color: var(--text); font-weight: 500; display: flex; justify-content: space-between; }
+  .field label span { font-family: 'DM Mono', monospace; color: var(--accent); font-size: 0.75rem; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%; height: 4px;
+    background: var(--surface2);
+    border-radius: 4px; outline: none;
+    border: 1px solid var(--border);
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0,229,160,0.5);
+    border: 2px solid var(--bg);
+  }
+
+  select {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.85rem;
+    cursor: pointer;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  select:focus { border-color: var(--accent); }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%;
+    padding: 15px 24px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #030a06;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 1rem;
+    border: none; cursor: pointer;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    box-shadow: 0 4px 20px rgba(0,229,160,0.25);
+  }
+  .btn-primary:hover:not(:disabled) { background: #00ffb3; box-shadow: 0 6px 28px rgba(0,229,160,0.4); transform: translateY(-1px); }
+  .btn-primary:active:not(:disabled) { transform: translateY(0); }
+  .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+
+  .btn-secondary {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    padding: 11px 20px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500; font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  .btn-secondary:hover { border-color: var(--accent); background: rgba(0,229,160,0.04); }
+
+  /* ── PREVIEW PANEL ── */
+  .preview-panel {
+    display: none;
+    gap: 16px;
+    animation: fadein .5s ease;
+  }
+  .preview-panel.show { display: grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 600px) { .preview-panel.show { grid-template-columns: 1fr; } }
+
+  .preview-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .preview-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .preview-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .preview-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(0,229,160,0.12);
+    color: var(--accent);
+    border: 1px solid rgba(0,229,160,0.2);
+  }
+
+  .preview-canvas {
+    width: 100%;
+    aspect-ratio: 4/3;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    background: repeating-conic-gradient(#1c1e27 0% 25%, #13141a 0% 50%) 0 0 / 16px 16px;
+    padding: 8px;
+  }
+  .preview-canvas img, .preview-canvas svg { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    animation: fadein .3s ease;
+  }
+  .progress-wrap.show { display: block; }
+
+  .progress-bar-track {
+    width: 100%; height: 4px;
+    background: var(--surface2);
+    border-radius: 4px;
+    margin: 16px 0 10px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 4px;
+    width: 0%;
+    transition: width .4s ease;
+    box-shadow: 0 0 10px var(--accent);
+  }
+  .progress-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  /* ── DOWNLOAD ROW ── */
+  .download-row {
+    display: none;
+    gap: 12px;
+  }
+  .download-row.show { display: flex; }
+
+  .download-info {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid rgba(0,229,160,0.25);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .download-info-icon {
+    font-size: 1.5rem;
+    width: 42px; height: 42px;
+    background: rgba(0,229,160,0.1);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .download-info-text { flex: 1; }
+  .download-info-name { font-weight: 600; font-size: 0.9rem; }
+  .download-info-meta { color: var(--muted); font-size: 0.78rem; font-family: 'DM Mono', monospace; margin-top: 2px; }
+
+  .btn-download {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 0 24px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #030a06;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.9rem;
+    border: none; cursor: pointer;
+    text-decoration: none;
+    transition: background .2s, box-shadow .2s;
+    box-shadow: 0 4px 20px rgba(0,229,160,0.25);
+    white-space: nowrap;
+  }
+  .btn-download:hover { background: #00ffb3; box-shadow: 0 6px 28px rgba(0,229,160,0.4); }
+
+  /* ── FEATURES ── */
+  .features {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+  }
+  .feat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: border-color .2s, transform .2s;
+  }
+  .feat-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .feat-icon { font-size: 1.8rem; margin-bottom: 12px; }
+  .feat-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
+  .feat-desc { color: var(--muted); font-size: 0.83rem; line-height: 1.6; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 800;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; color: var(--text); }
+  footer nav { display: flex; gap: 20px; }
+  footer nav a { color: var(--muted); font-size: 0.82rem; text-decoration: none; }
+  footer nav a:hover { color: var(--text); }
+  .footer-legal { color: var(--muted); font-size: 0.75rem; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 0.875rem;
+    z-index: 999;
+    transition: transform .3s ease;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { border-color: var(--danger); color: var(--danger); }
+  .toast.success { border-color: var(--accent); color: var(--accent); }
+
+  /* ── MISC ── */
+  .reset-btn {
+    background: none; border: none; color: var(--muted); font-size: 0.8rem;
+    cursor: pointer; display: flex; align-items: center; gap: 4px;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0;
+  }
+  .reset-btn:hover { color: var(--danger); }
+
+  * { position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" href="#">
+    <span class="logo-dot"></span> Vectorify
+  </a>
+  <nav>
+    <a href="#features">Features</a>
+    <a href="#" class="btn-nav">How it works</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">100% Free · No signup · Browser-based</div>
+  <h1>Turn any image into a<br><span>perfect vector</span></h1>
+  <p class="hero-sub">Upload a PNG, JPG or GIF and download a crisp, scalable SVG in seconds.</p>
+</div>
+
+<!-- TOOL AREA -->
+<div class="tool-wrapper">
+  <div class="tool-main">
+
+    <!-- Ad Top -->
+    <div class="ad-slot ad-slot-top">ADVERTISEMENT · 728×90</div>
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" accept="image/png,image/jpeg,image/gif,image/bmp,image/webp">
+      <div class="upload-icon">🖼️</div>
+      <div class="upload-label">Drop your image here</div>
+      <p class="upload-sub">or click to browse files</p>
+      <div class="upload-types">
+        <span class="chip">PNG</span>
+        <span class="chip">JPG</span>
+        <span class="chip">GIF</span>
+        <span class="chip">BMP</span>
+        <span class="chip">WEBP</span>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="progressWrap">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;">Vectorizing your image…</div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-text" id="progressText">Analyzing pixels…</div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-panel" id="previewPanel">
+      <div class="preview-box">
+        <div class="preview-header">
+          <span class="preview-label">Original</span>
+          <span class="preview-badge" id="origBadge">–</span>
+        </div>
+        <div class="preview-canvas"><img id="origPreview" src="" alt="Original"></div>
+      </div>
+      <div class="preview-box">
+        <div class="preview-header">
+          <span class="preview-label">Vector (SVG)</span>
+          <span class="preview-badge" id="svgBadge">–</span>
+        </div>
+        <div class="preview-canvas" id="svgPreview"></div>
+      </div>
+    </div>
+
+    <!-- Download row -->
+    <div class="download-row" id="downloadRow">
+      <div class="download-info">
+        <div class="download-info-icon">✦</div>
+        <div class="download-info-text">
+          <div class="download-info-name" id="dlFileName">vector.svg</div>
+          <div class="download-info-meta" id="dlFileMeta">SVG · Ready to download</div>
+        </div>
+      </div>
+      <a class="btn-download" id="downloadBtn" href="#" download="vector.svg">⬇ Download SVG</a>
+      <button class="btn-secondary" id="resetBtn" style="max-width:120px;">↺ New</button>
+    </div>
+
+    <!-- Convert button -->
+    <button class="btn-primary" id="convertBtn" disabled>
+      <span>✦</span> Vectorize Image
+    </button>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="card">
+      <div class="card-title">⚙ Settings</div>
+
+      <div class="field">
+        <label>Color Precision <span id="colorVal">6</span></label>
+        <input type="range" id="colorPrecision" min="1" max="8" value="6">
+      </div>
+
+      <div class="field">
+        <label>Detail Level <span id="pathVal">Medium</span></label>
+        <input type="range" id="pathDetail" min="1" max="3" value="2">
+      </div>
+
+      <div class="field">
+        <label>Blur (noise reduce) <span id="blurVal">0</span></label>
+        <input type="range" id="blurRadius" min="0" max="5" value="0">
+      </div>
+
+      <div class="field">
+        <label>Background</label>
+        <select id="bgMode">
+          <option value="keep">Keep background</option>
+          <option value="transparent">Remove background (auto)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">ℹ About</div>
+      <p style="color:var(--muted);font-size:0.82rem;line-height:1.7">
+        Vectorify converts raster images to smooth, scalable SVG vectors directly in your browser.
+        Nothing is uploaded to any server — your files stay private.
+      </p>
+    </div>
+
+    <!-- Ad Side -->
+    <div class="ad-slot ad-slot-side">AD · 180×280</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-label">Why Vectorify</div>
+  <div class="section-title">Built for creators</div>
+
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🔒</div>
+      <div class="feat-title">100% Private</div>
+      <div class="feat-desc">Your image never leaves your device. All processing happens locally in the browser.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-title">Instant Results</div>
+      <div class="feat-desc">No upload queue, no waiting. Vectorization happens in real time on your machine.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🎨</div>
+      <div class="feat-title">Color-accurate</div>
+      <div class="feat-desc">Preserves up to 256 colors with intelligent path grouping for clean, faithful output.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📐</div>
+      <div class="feat-title">Infinitely Scalable</div>
+      <div class="feat-desc">SVG vectors scale to any size — from business cards to billboards — without quality loss.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💸</div>
+      <div class="feat-title">Always Free</div>
+      <div class="feat-desc">No signup, no watermarks, no limits. Download as many SVGs as you need.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🖥️</div>
+      <div class="feat-title">Any Format</div>
+      <div class="feat-desc">Accepts PNG, JPG, GIF, BMP, and WebP. One tool for all your raster images.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Ad Bottom -->
+<div style="max-width:1100px;margin:0 auto;padding:0 24px 60px;">
+  <div class="ad-slot ad-slot-bottom">ADVERTISEMENT · 728×90</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">✦ Vectorify</div>
+  <nav>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+  </nav>
+  <div class="footer-legal">© 2025 Vectorify. All SVGs generated locally in your browser.</div>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────
+let originalFile = null;
+let svgData = null;
+let originalImg = null;
+
+// ─── Elements ────────────────────────────────────────────────────
+const uploadZone   = document.getElementById('uploadZone');
+const fileInput    = document.getElementById('fileInput');
+const convertBtn   = document.getElementById('convertBtn');
+const progressWrap = document.getElementById('progressWrap');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const previewPanel = document.getElementById('previewPanel');
+const origPreview  = document.getElementById('origPreview');
+const svgPreview   = document.getElementById('svgPreview');
+const origBadge    = document.getElementById('origBadge');
+const svgBadge     = document.getElementById('svgBadge');
+const downloadRow  = document.getElementById('downloadRow');
+const downloadBtn  = document.getElementById('downloadBtn');
+const resetBtn     = document.getElementById('resetBtn');
+const dlFileName   = document.getElementById('dlFileName');
+const dlFileMeta   = document.getElementById('dlFileMeta');
+
+// Settings
+const colorPrecision = document.getElementById('colorPrecision');
+const pathDetail     = document.getElementById('pathDetail');
+const blurRadius     = document.getElementById('blurRadius');
+const bgMode         = document.getElementById('bgMode');
+const colorVal       = document.getElementById('colorVal');
+const pathVal        = document.getElementById('pathVal');
+const blurVal        = document.getElementById('blurVal');
+
+// ─── Settings labels ─────────────────────────────────────────────
+colorPrecision.addEventListener('input', () => { colorVal.textContent = colorPrecision.value; });
+pathDetail.addEventListener('input', () => {
+  pathVal.textContent = ['Low','Medium','High'][+pathDetail.value - 1];
+});
+blurRadius.addEventListener('input', () => { blurVal.textContent = blurRadius.value; });
+
+// ─── Drag & Drop ─────────────────────────────────────────────────
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
+
+// ─── File handling ────────────────────────────────────────────────
+function handleFile(file) {
+  const allowed = ['image/png','image/jpeg','image/gif','image/bmp','image/webp'];
+  if (!allowed.includes(file.type)) { showToast('Unsupported file type. Use PNG, JPG, GIF, BMP or WEBP.', 'error'); return; }
+  if (file.size > 20 * 1024 * 1024) { showToast('File too large. Max 20 MB.', 'error'); return; }
+
+  originalFile = file;
+  svgData = null;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      originalImg = img;
+      origPreview.src = e.target.result;
+      origBadge.textContent = `${img.width}×${img.height}`;
+      previewPanel.classList.add('show');
+      svgPreview.innerHTML = '<span style="color:var(--muted);font-size:0.8rem;font-family:\'DM Mono\',monospace;">Click Vectorize →</span>';
+      svgBadge.textContent = 'pending';
+      downloadRow.classList.remove('show');
+      convertBtn.disabled = false;
+      uploadZone.style.display = 'none';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ─── Reset ───────────────────────────────────────────────────────
+resetBtn.addEventListener('click', reset);
+function reset() {
+  originalFile = null; svgData = null; originalImg = null;
+  uploadZone.style.display = '';
+  previewPanel.classList.remove('show');
+  downloadRow.classList.remove('show');
+  progressWrap.classList.remove('show');
+  convertBtn.disabled = true;
+  fileInput.value = '';
+}
+
+// ─── Vectorize ───────────────────────────────────────────────────
+convertBtn.addEventListener('click', vectorize);
+
+async function vectorize() {
+  if (!originalFile) return;
+
+  convertBtn.disabled = true;
+  progressWrap.classList.add('show');
+  previewPanel.classList.remove('show');
+  downloadRow.classList.remove('show');
+
+  const steps = [
+    [10, 'Loading image data…'],
+    [30, 'Analyzing color palette…'],
+    [55, 'Tracing paths…'],
+    [75, 'Smoothing curves…'],
+    [90, 'Building SVG structure…'],
+    [100,'Done!']
+  ];
+
+  let stepIdx = 0;
+  const stepInterval = setInterval(() => {
+    if (stepIdx < steps.length) {
+      setProgress(steps[stepIdx][0], steps[stepIdx][1]);
+      stepIdx++;
+    }
+  }, 380);
+
+  try {
+    const options = buildOptions();
+    const svgStr = await runTracer(options);
+    clearInterval(stepInterval);
+    setProgress(100, 'Done!');
+
+    await delay(400);
+    progressWrap.classList.remove('show');
+
+    svgData = svgStr;
+    const blob = new Blob([svgStr], { type: 'image/svg+xml' });
+    const url  = URL.createObjectURL(blob);
+
+    // Preview
+    svgPreview.innerHTML = svgStr;
+    const svgEl = svgPreview.querySelector('svg');
+    if (svgEl) { svgEl.style.maxWidth='100%'; svgEl.style.maxHeight='100%'; svgEl.removeAttribute('width'); svgEl.removeAttribute('height'); }
+
+    const kbSize = Math.round(blob.size / 1024);
+    svgBadge.textContent = `SVG · ${kbSize} KB`;
+
+    const baseName = originalFile.name.replace(/\.[^.]+$/, '');
+    dlFileName.textContent = baseName + '.svg';
+    dlFileMeta.textContent = `SVG · ${kbSize} KB · ${originalImg.width}×${originalImg.height}`;
+
+    downloadBtn.href = url;
+    downloadBtn.download = baseName + '.svg';
+
+    previewPanel.classList.add('show');
+    downloadRow.classList.add('show');
+    convertBtn.disabled = false;
+
+    showToast('✦ Vector ready! Click Download SVG.', 'success');
+
+  } catch (err) {
+    clearInterval(stepInterval);
+    progressWrap.classList.remove('show');
+    convertBtn.disabled = false;
+    previewPanel.classList.add('show');
+    showToast('Vectorization failed. Try a different image.', 'error');
+    console.error(err);
+  }
+}
+
+function buildOptions() {
+  const colors  = Math.pow(2, +colorPrecision.value); // 2-256
+  const detail  = +pathDetail.value;                   // 1=low 2=med 3=high
+  const blur    = +blurRadius.value;
+
+  const ltres = detail === 1 ? 1 : detail === 2 ? 0.5 : 0.1;
+  const qtres = detail === 1 ? 1 : detail === 2 ? 0.5 : 0.1;
+
+  return {
+    numberofcolors: Math.min(colors, 256),
+    mincolorratio: 0.02,
+    colorquantcycles: 3,
+    blurradius: blur,
+    blurdelta: 20,
+    ltres, qtres,
+    pathomit: 8,
+    rightangleenhance: true,
+    strokewidth: 1,
+    linefilter: false,
+    desc: false,
+    viewbox: true,
+    scale: 1,
+  };
+}
+
+function runTracer(options) {
+  return new Promise((resolve, reject) => {
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = originalImg;
+
+      // Cap at 1200px for performance
+      let w = img.width, h = img.height;
+      const MAX = 1200;
+      if (w > MAX || h > MAX) {
+        const ratio = Math.min(MAX/w, MAX/h);
+        w = Math.round(w*ratio);
+        h = Math.round(h*ratio);
+      }
+      canvas.width = w; canvas.height = h;
+
+      if (bgMode.value === 'transparent') {
+        ctx.clearRect(0, 0, w, h);
+      } else {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      ctx.drawImage(img, 0, 0, w, h);
+      const imageData = ctx.getImageData(0, 0, w, h);
+
+      setTimeout(() => {
+        try {
+          const svgStr = ImageTracer.imagedataToSVG(imageData, options);
+          resolve(svgStr);
+        } catch(e) { reject(e); }
+      }, 50);
+
+    } catch(e) { reject(e); }
+  });
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────
+function setProgress(pct, text) {
+  progressFill.style.width = pct + '%';
+  progressText.textContent = text;
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+let toastTimer = null;
+function showToast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+</script>
+
+</body>
+</html>
