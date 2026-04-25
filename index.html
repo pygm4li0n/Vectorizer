@@ -3,977 +3,1136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VectorARG – Convertí tu imagen a SVG gratis</title>
-<meta name="description" content="Convertí cualquier imagen a vector SVG con bordes suaves. Gratis, sin registro, sin fondo.">
+<title>VectorARG – Convertí tu imagen a SVG perfecto · Gratis</title>
+<meta name="description" content="La mejor herramienta gratuita para convertir imágenes a SVG vectorial con bordes suaves. Hecha en Argentina.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,900;1,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/imagetracerjs@1.2.6/imagetracer_v1.2.6.js"></script>
-<!-- AdSense: reemplazá TU_PUBLISHER_ID
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-TU_PUBLISHER_ID" crossorigin="anonymous"></script>
+<!--
+  AdSense — reemplazá TU_PUB_ID:
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-TU_PUB_ID" crossorigin="anonymous"></script>
 -->
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  /* Paleta Argentina */
-  --cel:      #74ACDF;
-  --cel-d:    #4a87be;
-  --cel-dd:   #2d6a9f;
-  --cel-l:    #b8d8f0;
-  --cel-ll:   #deeefa;
-  --gold:     #F6B40E;   /* sol de mayo */
-  --gold-d:   #c48c00;
-  --white:    #F8FBFF;
-  --cream:    #EEF5FC;
-  --navy:     #071e38;
-  --navy-s:   #0d2a4a;
-  --navy-m:   #133558;
-  --navy-l:   #1e4878;
-  --border:   #1e3f60;
-  --border-l: #2e5880;
-  --text:     #e0ecfa;
-  --muted:    #6a93b8;
-  --muted-l:  #9ab8d4;
-  --radius:   18px;
-  --danger:   #ff5a5a;
-  --ok:       #3ddc84;
+  --cel:#74ACDF;   --cel-d:#3d7ab8;  --cel-dd:#1f5a96;
+  --cel-l:#a8ccea; --cel-ll:#d5eaf8;
+  --gold:#F6B40E;  --gold-d:#c48c00; --gold-l:#fad65a;
+  --white:#F8FBFF; --cream:#e8f3fc;
+  --bg:#050f1e;    --s1:#081829;     --s2:#0d2140;
+  --s3:#132a52;    --s4:#1a3464;
+  --bdr:#1c3a5e;   --bdr2:#264d7a;
+  --txt:#ddeeff;   --mut:#5d88b0;    --mut2:#8ab0cc;
+  --r:16px;        --danger:#ff4d4d; --ok:#2ecc71;
 }
 
 html{scroll-behavior:smooth}
-
 body{
   font-family:'Nunito',sans-serif;
-  background:var(--navy);
-  color:var(--text);
-  min-height:100vh;
-  overflow-x:hidden;
+  background:var(--bg);color:var(--txt);
+  min-height:100vh;overflow-x:hidden;
 }
 
-/* Fondo con rayas sutiles tipo bandera */
+/* ── GRAN SOL DE MAYO decorativo (SVG inline fijo) ── */
+.sol-deco{
+  position:fixed;top:-180px;right:-180px;
+  width:560px;height:560px;
+  pointer-events:none;z-index:0;
+  opacity:.055;
+}
+
+/* ── FONDO bandera sutil ── */
 body::before{
-  content:'';
-  position:fixed;inset:0;z-index:0;pointer-events:none;
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
     linear-gradient(180deg,
-      rgba(116,172,223,.07) 0%,
-      rgba(116,172,223,.07) 33.3%,
-      rgba(248,251,255,.04) 33.3%,
-      rgba(248,251,255,.04) 66.6%,
-      rgba(116,172,223,.07) 66.6%,
-      rgba(116,172,223,.07) 100%
+      rgba(116,172,223,.05) 0%,rgba(116,172,223,.05) 33.3%,
+      rgba(248,251,255,.025) 33.3%,rgba(248,251,255,.025) 66.7%,
+      rgba(116,172,223,.05) 66.7%,rgba(116,172,223,.05) 100%
     );
 }
 body::after{
-  content:'';
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(116,172,223,.12) 0%,transparent 70%);
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -5%,rgba(116,172,223,.14),transparent 65%),
+    radial-gradient(ellipse 60% 40% at 100% 100%,rgba(246,180,14,.04),transparent 55%);
 }
 
-/* ── HEADER ── */
+/* ════════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════════ */
 header{
-  position:sticky;top:0;z-index:200;
+  position:sticky;top:0;z-index:300;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 36px;height:68px;
-  background:rgba(7,30,56,.94);
-  backdrop-filter:blur(24px);
+  padding:0 40px;height:70px;
+  background:rgba(5,15,30,.96);
+  backdrop-filter:blur(28px);
   border-bottom:3px solid var(--cel);
-  box-shadow:0 3px 40px rgba(116,172,223,.18),0 1px 0 rgba(255,255,255,.04) inset;
+  box-shadow:0 4px 50px rgba(116,172,223,.18);
 }
 
-/* SVG Bandera Argentina como logo */
-.logo{display:flex;align-items:center;gap:14px;text-decoration:none}
-.flag-icon{
-  width:40px;height:40px;border-radius:12px;
-  overflow:hidden;flex-shrink:0;
-  box-shadow:0 0 20px rgba(116,172,223,.4),0 0 0 1px rgba(116,172,223,.3);
-  display:flex;flex-direction:column;
-  position:relative;
-}
-.flag-stripe-top   {flex:1;background:var(--cel)}
-.flag-stripe-mid   {flex:1;background:var(--white);display:flex;align-items:center;justify-content:center}
-.flag-stripe-bot   {flex:1;background:var(--cel)}
-.flag-sun{
-  width:12px;height:12px;
-  background:var(--gold);
-  border-radius:50%;
-  box-shadow:0 0 0 1px rgba(0,0,0,.1);
-  position:relative;
-}
-/* rayos del sol */
-.flag-sun::before,.flag-sun::after{
-  content:'';
-  position:absolute;
-  background:var(--gold);
-  top:50%;left:50%;
-}
-.flag-sun::before{width:2px;height:18px;transform:translate(-50%,-50%);box-shadow:6px 0 0 0 var(--gold),-6px 0 0 0 var(--gold)}
-.flag-sun::after{width:18px;height:2px;transform:translate(-50%,-50%);box-shadow:0 6px 0 0 var(--gold),0 -6px 0 0 var(--gold)}
+.logo{display:flex;align-items:center;gap:16px;text-decoration:none;flex-shrink:0}
 
-.logo-text{
+/* Bandera Argentina SVG correcta con sol */
+.flag-wrap{
+  width:44px;height:30px;border-radius:6px;overflow:hidden;
+  flex-shrink:0;
+  box-shadow:0 0 22px rgba(116,172,223,.45),0 0 0 1.5px rgba(116,172,223,.35);
+}
+.flag-wrap svg{width:100%;height:100%;display:block}
+
+.logo-name{
   font-family:'Bebas Neue',sans-serif;
-  font-size:1.7rem;letter-spacing:.07em;line-height:1;
-  color:var(--white);
+  font-size:2rem;letter-spacing:.06em;
+  color:var(--white);line-height:1;
 }
-.logo-text span{color:var(--cel);text-shadow:0 0 16px rgba(116,172,223,.5)}
+.logo-name em{font-style:normal;color:var(--cel);text-shadow:0 0 20px rgba(116,172,223,.6)}
 
-.header-r{display:flex;align-items:center;gap:12px}
-.badge{
-  padding:5px 14px;border-radius:100px;
-  background:rgba(116,172,223,.13);
-  border:1px solid rgba(116,172,223,.28);
-  color:var(--cel-l);font-size:.73rem;font-weight:700;
-  letter-spacing:.06em;text-transform:uppercase;
+.header-mid{
+  display:flex;gap:6px;align-items:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;letter-spacing:.07em;
 }
+.hpill{
+  padding:4px 11px;border-radius:100px;
+  border:1px solid;font-weight:600;
+}
+.hpill-blue{border-color:rgba(116,172,223,.3);background:rgba(116,172,223,.1);color:var(--cel-l)}
+.hpill-gold{border-color:rgba(246,180,14,.3);background:rgba(246,180,14,.08);color:var(--gold-l)}
 
-/* ── HERO ── */
+/* ════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════ */
 .hero{
-  text-align:center;padding:70px 24px 50px;
   position:relative;z-index:1;
+  text-align:center;padding:76px 24px 56px;
+  overflow:hidden;
 }
-.hero-pill{
+/* Líneas radiales finas como rayos del sol */
+.hero::before{
+  content:'';position:absolute;
+  width:900px;height:900px;
+  top:50%;left:50%;transform:translate(-50%,-60%);
+  background:conic-gradient(
+    from 0deg,
+    transparent 0deg 11.25deg,
+    rgba(116,172,223,.04) 11.25deg 12.25deg,
+    transparent 12.25deg 22.5deg,
+    rgba(116,172,223,.04) 22.5deg 23.5deg
+  );
+  pointer-events:none;border-radius:50%;
+  animation:rotar 120s linear infinite;
+}
+@keyframes rotar{to{transform:translate(-50%,-60%) rotate(360deg)}}
+
+.hero-sup{
   display:inline-flex;align-items:center;gap:9px;
-  padding:7px 18px;border-radius:100px;
+  padding:7px 20px;border-radius:100px;
   border:1.5px solid rgba(246,180,14,.35);
-  background:rgba(246,180,14,.09);color:var(--gold);
-  font-size:.77rem;font-weight:700;
+  background:rgba(246,180,14,.07);
+  color:var(--gold);font-size:.8rem;font-weight:700;
   letter-spacing:.07em;text-transform:uppercase;
-  margin-bottom:22px;animation:up .6s ease both;
+  margin-bottom:28px;
+  animation:aparecer .6s ease both;
 }
-.hero-pill::before{content:'✦';animation:spin 6s linear infinite;display:inline-block}
-@keyframes spin{to{transform:rotate(360deg)}}
+.sol-spin{display:inline-block;animation:rotar2 8s linear infinite;font-size:.95rem}
+@keyframes rotar2{to{transform:rotate(360deg)}}
 
 h1{
   font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(3.2rem,7.5vw,5.8rem);
-  letter-spacing:.04em;line-height:.98;
-  color:var(--white);animation:up .7s ease .1s both;
+  font-size:clamp(3.8rem,8.5vw,7rem);
+  letter-spacing:.03em;line-height:.92;
+  color:var(--white);
+  animation:aparecer .75s ease .1s both;
+  position:relative;z-index:1;
 }
-h1 em{
-  font-style:normal;color:var(--cel);
-  text-shadow:0 0 50px rgba(116,172,223,.55),0 0 100px rgba(116,172,223,.25);
+h1 .azul{
+  color:var(--cel);
+  text-shadow:0 0 60px rgba(116,172,223,.6),0 0 120px rgba(116,172,223,.25);
 }
-h1 strong{
-  font-style:normal;color:var(--gold);
-  text-shadow:0 0 40px rgba(246,180,14,.45);
+h1 .dorado{
+  color:var(--gold);
+  text-shadow:0 0 50px rgba(246,180,14,.5);
 }
 
 .hero-sub{
-  margin:18px auto 0;max-width:500px;
-  color:var(--muted-l);font-size:1.05rem;
-  font-weight:400;line-height:1.65;
-  animation:up .7s ease .2s both;
+  margin:22px auto 0;max-width:540px;
+  color:var(--mut2);font-size:1.08rem;line-height:1.7;font-weight:400;
+  animation:aparecer .75s ease .2s both;position:relative;z-index:1;
 }
 
-@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes aparecer{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── ANUNCIOS ── */
-.ad-band{display:flex;justify-content:center;max-width:780px;margin:0 auto;padding:0 24px}
+/* ════════════════════════════════════════════
+   AD BANNER
+══════════════════════════════════════════════ */
+.ad-wrap{max-width:1300px;margin:0 auto;padding:0 28px}
 .ad-blk{
-  width:100%;background:var(--navy-s);
-  border:1.5px dashed var(--border-l);border-radius:12px;
+  width:100%;background:var(--s1);
+  border:1.5px dashed var(--bdr2);border-radius:12px;
   display:flex;align-items:center;justify-content:center;
-  color:var(--muted);font-family:'JetBrains Mono',monospace;
-  font-size:.67rem;letter-spacing:.11em;text-transform:uppercase;
-  cursor:pointer;transition:border-color .25s,background .25s;
+  color:var(--mut);font-family:'JetBrains Mono',monospace;
+  font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+  cursor:pointer;transition:.25s;
 }
-.ad-blk:hover{border-color:var(--cel);background:rgba(116,172,223,.05)}
-.ad-728{height:92px;margin-bottom:32px}
-.ad-300{height:252px}
+.ad-blk:hover{border-color:var(--cel);background:rgba(116,172,223,.04)}
+.ad-top{height:94px;margin-bottom:34px}
+.ad-side{width:100%;height:256px}
+.ad-bot{height:94px;margin-top:0}
 
-/* ── LAYOUT ── */
-.wrap{
-  display:grid;grid-template-columns:1fr;
-  gap:22px;max-width:1130px;margin:0 auto;
-  padding:0 22px 90px;position:relative;z-index:1;
+/* ════════════════════════════════════════════
+   LAYOUT PRINCIPAL
+══════════════════════════════════════════════ */
+.main{
+  max-width:1300px;margin:0 auto;
+  padding:0 28px 100px;
+  display:grid;
+  grid-template-columns:1fr 370px;
+  gap:26px;
+  position:relative;z-index:1;
+  animation:aparecer .9s ease .3s both;
 }
-@media(min-width:960px){.wrap{grid-template-columns:1fr 310px}}
-.tool{display:flex;flex-direction:column;gap:18px}
+@media(max-width:1050px){.main{grid-template-columns:1fr}}
+
+/* ── COLUMNA IZQUIERDA ── */
+.col-tool{display:flex;flex-direction:column;gap:20px}
 
 /* ── UPLOAD ── */
 .upload-zona{
-  border:2.5px dashed var(--border-l);border-radius:var(--radius);
-  background:linear-gradient(160deg,var(--navy-s),var(--navy-m));
-  padding:58px 36px;text-align:center;cursor:pointer;
-  transition:border-color .28s,background .28s,transform .22s,box-shadow .28s;
-  animation:up .8s ease .3s both;user-select:none;
+  border:2.5px dashed var(--bdr2);border-radius:22px;
+  background:linear-gradient(155deg,var(--s1) 0%,var(--s2) 50%,var(--s1) 100%);
+  padding:72px 40px;text-align:center;cursor:pointer;
+  transition:border-color .3s,background .3s,transform .25s,box-shadow .3s;
+  user-select:none;
 }
-.upload-zona:hover{
+.upload-zona:hover,.upload-zona.drag-over{
   border-color:var(--cel);
-  background:linear-gradient(160deg,rgba(116,172,223,.08),rgba(116,172,223,.04));
-  transform:translateY(-3px);
-  box-shadow:0 12px 40px rgba(116,172,223,.15);
+  background:linear-gradient(155deg,rgba(116,172,223,.08),rgba(116,172,223,.04),rgba(116,172,223,.08));
+  transform:translateY(-4px);
+  box-shadow:0 20px 60px rgba(116,172,223,.18);
 }
-.upload-zona.drag{border-color:var(--gold);border-style:solid;background:rgba(246,180,14,.06)}
+.upload-zona.drag-over{border-color:var(--gold);border-style:solid}
 
-.upload-icono{
-  width:68px;height:68px;margin:0 auto 20px;
-  border-radius:20px;
-  background:linear-gradient(145deg,var(--navy-m),var(--navy-l));
-  border:2px solid var(--border-l);
-  display:flex;align-items:center;justify-content:center;
-  font-size:2rem;
-  transition:transform .25s,box-shadow .25s;
-  box-shadow:0 4px 16px rgba(0,0,0,.3);
+.upload-icon-wrap{
+  width:80px;height:80px;margin:0 auto 22px;border-radius:22px;
+  background:linear-gradient(145deg,var(--s3),var(--s4));
+  border:2px solid var(--bdr2);
+  display:flex;align-items:center;justify-content:center;font-size:2.2rem;
+  box-shadow:0 8px 28px rgba(0,0,0,.4);
+  transition:transform .28s,box-shadow .28s;
 }
-.upload-zona:hover .upload-icono{
-  transform:scale(1.12) rotate(-5deg);
-  box-shadow:0 10px 28px rgba(116,172,223,.25);
+.upload-zona:hover .upload-icon-wrap{
+  transform:scale(1.12) rotate(-6deg);
+  box-shadow:0 14px 36px rgba(116,172,223,.28);
 }
-.upload-titulo{
+.upload-h{
   font-family:'Bebas Neue',sans-serif;
-  font-size:1.55rem;letter-spacing:.06em;color:var(--white);margin-bottom:8px;
+  font-size:1.8rem;letter-spacing:.07em;color:var(--white);margin-bottom:8px;
 }
-.upload-sub{color:var(--muted-l);font-size:.88rem;line-height:1.5}
-.chips{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:20px}
+.upload-sub{color:var(--mut2);font-size:.95rem;line-height:1.6}
+.upload-chips{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:22px}
 .chip{
-  padding:4px 11px;border-radius:7px;
-  background:var(--navy-m);border:1px solid var(--border);
-  font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);
+  padding:4px 12px;border-radius:8px;
+  background:var(--s3);border:1px solid var(--bdr);
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--mut);
 }
 
-/* ── AUTO DETECT TAG ── */
-.auto-tag{
-  display:inline-flex;align-items:center;gap:7px;
-  margin-top:14px;padding:5px 14px;border-radius:8px;
-  background:rgba(246,180,14,.1);border:1px solid rgba(246,180,14,.25);
-  color:var(--gold);font-size:.75rem;font-weight:700;
+/* ── BARRA DE PROGRESO ── */
+.prog-panel{
+  display:none;
+  background:linear-gradient(155deg,var(--s1),var(--s2));
+  border:1.5px solid var(--bdr2);border-radius:22px;
+  padding:48px 44px;text-align:center;
 }
-
-/* ── PROGRESO ── */
-.prog-wrap{
-  display:none;background:linear-gradient(160deg,var(--navy-s),var(--navy-m));
-  border:1px solid var(--border-l);border-radius:var(--radius);
-  padding:40px 36px;text-align:center;animation:up .3s ease;
-}
-.prog-wrap.on{display:block}
+.prog-panel.vis{display:block;animation:aparecer .35s ease}
 .prog-pct{
   font-family:'Bebas Neue',sans-serif;
-  font-size:3.2rem;color:var(--white);letter-spacing:.06em;line-height:1;
+  font-size:4rem;line-height:1;
+  color:var(--white);letter-spacing:.04em;
   margin-bottom:6px;
 }
-.prog-sublabel{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:1.1rem;letter-spacing:.12em;color:var(--cel);margin-bottom:22px;
+.prog-step{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.82rem;color:var(--cel-l);margin-bottom:24px;
+  min-height:1.2em;
 }
 .prog-track{
-  width:100%;height:7px;background:var(--navy);
-  border-radius:7px;overflow:hidden;margin-bottom:14px;
-  border:1px solid var(--border);
+  width:100%;height:8px;background:var(--bg);
+  border-radius:8px;overflow:hidden;border:1px solid var(--bdr);
 }
 .prog-fill{
-  height:100%;width:0%;border-radius:7px;
+  height:100%;width:0%;border-radius:8px;
   background:linear-gradient(90deg,var(--cel-dd),var(--cel),var(--gold));
-  transition:width .55s cubic-bezier(.4,0,.2,1);
-  box-shadow:0 0 14px rgba(116,172,223,.6);
-}
-.prog-txt{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.8rem;color:var(--muted);min-height:1.2em;
+  transition:width .6s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 18px rgba(116,172,223,.65);
 }
 
-/* ── PREVIEW ── */
-.prev-panel{display:none;gap:16px;animation:up .45s ease}
-.prev-panel.on{display:grid;grid-template-columns:1fr 1fr}
-@media(max-width:560px){.prev-panel.on{grid-template-columns:1fr}}
+/* ════════════════════════════════════════════
+   COMPARADOR DRAG — PIEZA CENTRAL
+══════════════════════════════════════════════ */
+.compare-outer{
+  display:none;
+  border-radius:22px;overflow:hidden;
+  border:2px solid var(--bdr2);
+  box-shadow:0 24px 80px rgba(0,0,0,.5);
+  position:relative;
+  background:repeating-conic-gradient(#0d1e30 0% 25%,#091525 0% 50%) 0 0/24px 24px;
+  user-select:none;
+  aspect-ratio:4/3;
+}
+.compare-outer.vis{display:block;animation:aparecer .5s ease}
 
-.prev-box{
-  background:var(--navy-s);border:1px solid var(--border-l);
-  border-radius:var(--radius);overflow:hidden;
-}
-.prev-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 16px;border-bottom:1px solid var(--border);
-}
-.prev-lbl{
-  font-family:'JetBrains Mono',monospace;font-size:.68rem;
-  color:var(--muted);letter-spacing:.09em;text-transform:uppercase;
-}
-.prev-badge{
-  font-family:'JetBrains Mono',monospace;font-size:.65rem;
-  padding:3px 9px;border-radius:6px;
-  background:rgba(116,172,223,.13);color:var(--cel);
-  border:1px solid rgba(116,172,223,.28);
-}
-.prev-badge.gold{
-  background:rgba(246,180,14,.13);color:var(--gold);
-  border-color:rgba(246,180,14,.28);
-}
-
-/* Fondo tipo tablero de ajedrez para ver transparencia */
-.prev-canvas{
-  width:100%;aspect-ratio:4/3;
+/* Imagen original - siempre visible */
+.compare-orig{
+  position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;
-  overflow:hidden;padding:10px;
-  background:
-    repeating-conic-gradient(#0f2742 0% 25%,#0d2340 0% 50%)
-    0 0/20px 20px;
+  overflow:hidden;
 }
-.prev-canvas img,.prev-canvas svg{
+.compare-orig img{
   max-width:100%;max-height:100%;
-  object-fit:contain;border-radius:4px;
+  object-fit:contain;pointer-events:none;
 }
 
-/* ── DESCARGA ── */
-.dl-row{display:none;gap:12px;align-items:stretch;animation:up .4s ease}
-.dl-row.on{display:flex}
-.dl-info{
-  flex:1;background:var(--navy-s);
+/* SVG resultado - clip por la derecha del handle */
+.compare-svg{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  clip-path:inset(0 50% 0 0);
+  transition:none;
+}
+.compare-svg svg,.compare-svg img{
+  max-width:100%;max-height:100%;
+  object-fit:contain;pointer-events:none;
+}
+
+/* Etiquetas ORIGINAL / VECTOR */
+.compare-tag{
+  position:absolute;top:18px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;letter-spacing:.12em;font-weight:600;
+  text-transform:uppercase;padding:5px 12px;border-radius:8px;
+}
+.ctag-orig{
+  left:18px;
+  background:rgba(13,33,64,.85);
+  border:1px solid var(--bdr2);color:var(--mut2);
+}
+.ctag-vec{
+  right:18px;
+  background:rgba(116,172,223,.18);
+  border:1px solid rgba(116,172,223,.4);color:var(--cel-l);
+}
+
+/* Línea divisoria vertical */
+.compare-line{
+  position:absolute;top:0;bottom:0;
+  width:3px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(180deg,transparent,var(--cel),var(--gold),var(--cel),transparent);
+  pointer-events:none;z-index:10;
+}
+
+/* Handle arrastrable */
+.compare-handle{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:48px;height:48px;border-radius:50%;
+  background:var(--cel);
+  border:3px solid var(--white);
+  display:flex;align-items:center;justify-content:center;
+  cursor:ew-resize;z-index:11;
+  box-shadow:0 0 0 4px rgba(116,172,223,.25),0 8px 24px rgba(0,0,0,.5);
+  transition:transform .15s,box-shadow .15s;
+  font-size:1rem;font-weight:900;color:var(--navy,#06192e);
+  line-height:1;
+}
+.compare-handle:hover,.compare-handle.active{
+  transform:translate(-50%,-50%) scale(1.15);
+  box-shadow:0 0 0 8px rgba(116,172,223,.2),0 12px 30px rgba(0,0,0,.6);
+}
+.compare-handle svg{pointer-events:none}
+
+/* ── BARRA DESCARGA ── */
+.dl-bar{
+  display:none;
+  background:linear-gradient(135deg,var(--s1),var(--s2));
   border:1.5px solid rgba(116,172,223,.3);
-  border-radius:var(--radius);padding:15px 20px;
-  display:flex;align-items:center;gap:14px;
-  box-shadow:0 0 24px rgba(116,172,223,.1);
+  border-radius:16px;padding:18px 22px;
+  align-items:center;gap:16px;
+  box-shadow:0 0 40px rgba(116,172,223,.1);
 }
-.dl-icon{
-  width:44px;height:44px;flex-shrink:0;
-  background:rgba(116,172,223,.14);border-radius:12px;
-  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+.dl-bar.vis{display:flex;animation:aparecer .4s ease}
+.dl-file-icon{
+  width:48px;height:48px;flex-shrink:0;border-radius:13px;
+  background:rgba(116,172,223,.15);
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;
 }
-.dl-name{font-weight:700;font-size:.92rem;color:var(--white)}
-.dl-meta{color:var(--muted);font-size:.74rem;font-family:'JetBrains Mono',monospace;margin-top:4px}
+.dl-info{flex:1;min-width:0}
+.dl-name{font-weight:800;font-size:.95rem;color:var(--white);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dl-meta{color:var(--mut);font-size:.74rem;font-family:'JetBrains Mono',monospace;margin-top:3px}
+.dl-actions{display:flex;gap:10px;flex-shrink:0}
 
-/* ── BOTONES ── */
+/* ── BOTÓN PRINCIPAL VECTORIZAR ── */
 .btn-vect{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  width:100%;padding:17px 24px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  width:100%;padding:19px 28px;border-radius:15px;
   background:linear-gradient(135deg,var(--cel-dd),var(--cel-d),var(--cel));
-  color:var(--navy);font-family:'Bebas Neue',sans-serif;
-  font-size:1.3rem;letter-spacing:.1em;
+  color:var(--bg);
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.45rem;letter-spacing:.1em;
   border:none;cursor:pointer;
   transition:transform .18s,box-shadow .22s,opacity .2s;
-  box-shadow:0 8px 28px rgba(116,172,223,.4);
+  box-shadow:0 10px 36px rgba(116,172,223,.45);
+  position:relative;overflow:hidden;
 }
+.btn-vect::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%);
+  transform:translateX(-100%);transition:transform .5s;
+}
+.btn-vect:hover:not(:disabled)::before{transform:translateX(100%)}
 .btn-vect:hover:not(:disabled){
   transform:translateY(-3px);
-  box-shadow:0 14px 36px rgba(116,172,223,.55);
+  box-shadow:0 18px 48px rgba(116,172,223,.6);
 }
-.btn-vect:active:not(:disabled){transform:translateY(-1px)}
-.btn-vect:disabled{opacity:.32;cursor:not-allowed}
+.btn-vect:disabled{opacity:.28;cursor:not-allowed}
 
+/* BOTONES secundarios */
 .btn-dl{
-  display:flex;align-items:center;justify-content:center;gap:9px;
-  padding:0 24px;border-radius:14px;
+  display:flex;align-items:center;gap:8px;
+  padding:12px 24px;border-radius:11px;
   background:linear-gradient(135deg,var(--gold-d),var(--gold));
-  color:var(--navy);font-family:'Bebas Neue',sans-serif;
-  font-size:1.1rem;letter-spacing:.1em;
-  border:none;cursor:pointer;
-  transition:transform .18s,box-shadow .22s;
-  box-shadow:0 8px 22px rgba(246,180,14,.35);
-  white-space:nowrap;
+  color:var(--bg);font-family:'Bebas Neue',sans-serif;
+  font-size:1.05rem;letter-spacing:.09em;
+  border:none;cursor:pointer;white-space:nowrap;
+  transition:transform .18s,box-shadow .2s;
+  box-shadow:0 6px 22px rgba(246,180,14,.35);
 }
-.btn-dl:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(246,180,14,.5)}
+.btn-dl:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(246,180,14,.55)}
 
 .btn-nuevo{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:0 18px;border-radius:14px;
-  background:transparent;border:1.5px solid var(--border-l);
-  color:var(--muted);font-size:.88rem;font-weight:700;
+  display:flex;align-items:center;gap:7px;
+  padding:12px 20px;border-radius:11px;
+  background:transparent;border:1.5px solid var(--bdr2);
+  color:var(--mut2);font-size:.9rem;font-weight:700;
   cursor:pointer;white-space:nowrap;
   transition:border-color .2s,color .2s,background .2s;
 }
 .btn-nuevo:hover{border-color:var(--cel);color:var(--cel);background:rgba(116,172,223,.06)}
 
-/* ── SIDEBAR ── */
-.sidebar{display:flex;flex-direction:column;gap:18px}
+/* ════════════════════════════════════════════
+   SIDEBAR DERECHO
+══════════════════════════════════════════════ */
+.sidebar{display:flex;flex-direction:column;gap:20px}
 
 .card{
-  background:linear-gradient(160deg,var(--navy-s),var(--navy-m));
-  border:1px solid var(--border-l);border-radius:var(--radius);
-  padding:22px;
+  background:linear-gradient(155deg,var(--s1),var(--s2));
+  border:1.5px solid var(--bdr2);border-radius:20px;padding:24px;
 }
-.card-tit{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:.88rem;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--cel);margin-bottom:20px;
+.card-head{
+  font-family:'Bebas Neue',sans-serif;font-size:.9rem;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--cel);margin-bottom:22px;
+  border-bottom:1.5px solid var(--bdr);padding-bottom:12px;
   display:flex;align-items:center;gap:8px;
-  border-bottom:1px solid var(--border);padding-bottom:12px;
 }
 
+/* ── SELECTOR DE MODO (3 tarjetas) ── */
+.modo-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+.modo-btn{
+  display:flex;flex-direction:column;align-items:center;
+  gap:7px;padding:16px 8px;border-radius:14px;
+  background:var(--s3);border:2px solid var(--bdr);
+  cursor:pointer;transition:.22s;text-align:center;
+}
+.modo-btn:hover{border-color:var(--cel-l);background:rgba(116,172,223,.07)}
+.modo-btn.activo{
+  border-color:var(--cel);
+  background:linear-gradient(155deg,rgba(116,172,223,.14),rgba(116,172,223,.06));
+  box-shadow:0 0 20px rgba(116,172,223,.15);
+}
+.modo-ico{font-size:1.6rem}
+.modo-nom{font-weight:800;font-size:.78rem;color:var(--white)}
+.modo-desc{font-size:.65rem;color:var(--mut);line-height:1.4}
+.modo-btn.activo .modo-nom{color:var(--cel)}
+
+/* ── CALIDAD slider ── */
 .campo{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
 .campo:last-child{margin-bottom:0}
-
-.campo label{
-  font-size:.84rem;font-weight:700;color:var(--text);
+.campo-lbl{
   display:flex;justify-content:space-between;align-items:center;
+  font-size:.85rem;font-weight:700;color:var(--txt);
 }
-.campo label .val{
-  font-family:'JetBrains Mono',monospace;
-  color:var(--gold);font-size:.76rem;font-weight:400;
-  background:rgba(246,180,14,.1);border:1px solid rgba(246,180,14,.2);
-  padding:1px 7px;border-radius:5px;
+.campo-val{
+  font-family:'JetBrains Mono',monospace;font-size:.76rem;
+  color:var(--gold);background:rgba(246,180,14,.1);
+  border:1px solid rgba(246,180,14,.25);
+  padding:2px 8px;border-radius:6px;
 }
-.campo label .val.auto{
-  color:var(--cel);background:rgba(116,172,223,.1);border-color:rgba(116,172,223,.2);
-}
-.campo-desc{color:var(--muted);font-size:.74rem;line-height:1.55;margin-top:-2px}
+.campo-val.auto{color:var(--cel);background:rgba(116,172,223,.1);border-color:rgba(116,172,223,.25)}
+.campo-sub{font-size:.72rem;color:var(--mut);line-height:1.55}
 
 input[type=range]{
   -webkit-appearance:none;appearance:none;
-  width:100%;height:5px;background:var(--navy);
-  border-radius:5px;outline:none;border:1px solid var(--border);cursor:pointer;
+  width:100%;height:6px;background:var(--bg);
+  border-radius:6px;border:1px solid var(--bdr);
+  cursor:pointer;outline:none;
 }
 input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:19px;height:19px;border-radius:50%;
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
   background:linear-gradient(135deg,var(--cel-dd),var(--cel));
-  cursor:pointer;border:2px solid var(--navy);
-  box-shadow:0 0 10px rgba(116,172,223,.55);
+  border:2.5px solid var(--bg);cursor:pointer;
+  box-shadow:0 0 12px rgba(116,172,223,.6);
   transition:transform .15s;
 }
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
 
-select{
-  width:100%;padding:9px 13px;
-  background:var(--navy-m);border:1.5px solid var(--border-l);
-  border-radius:10px;color:var(--text);
-  font-size:.84rem;font-weight:600;
-  cursor:pointer;outline:none;
-  font-family:'Nunito',sans-serif;
-  transition:border-color .2s;
-}
-select:focus{border-color:var(--cel)}
-
-/* Toggle switch */
+/* Toggle */
 .toggle-row{
   display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px;border-radius:10px;
-  background:var(--navy);border:1px solid var(--border);
-  cursor:pointer;user-select:none;
-  transition:border-color .2s;
+  padding:13px 16px;border-radius:12px;
+  background:var(--s3);border:1.5px solid var(--bdr);
+  cursor:pointer;user-select:none;transition:border-color .2s;
 }
 .toggle-row:hover{border-color:var(--cel-l)}
-.toggle-label{font-size:.84rem;font-weight:700;color:var(--text)}
-.toggle-sub{font-size:.72rem;color:var(--muted);margin-top:2px}
-.toggle-switch{
-  width:42px;height:24px;border-radius:12px;
-  background:var(--border);border:1px solid var(--border-l);
-  position:relative;flex-shrink:0;
-  transition:background .25s;
+.toggle-texts .t-main{font-size:.85rem;font-weight:700;color:var(--txt)}
+.toggle-texts .t-sub{font-size:.7rem;color:var(--mut);margin-top:2px}
+.toggle{
+  width:44px;height:26px;border-radius:13px;
+  background:var(--bdr2);border:1px solid var(--bdr);
+  position:relative;flex-shrink:0;transition:background .25s;
 }
-.toggle-switch::after{
-  content:'';position:absolute;top:3px;left:3px;
+.toggle::after{
+  content:'';position:absolute;top:4px;left:4px;
   width:16px;height:16px;border-radius:50%;
-  background:var(--muted);
-  transition:transform .25s,background .25s;
+  background:var(--mut);transition:.25s;
 }
-.toggle-switch.on{background:var(--cel-dd)}
-.toggle-switch.on::after{transform:translateX(18px);background:var(--white)}
+.toggle.on{background:rgba(116,172,223,.3);border-color:var(--cel-d)}
+.toggle.on::after{transform:translateX(18px);background:var(--cel)}
 
-/* ── FEATURES ── */
-.feats{max-width:1130px;margin:0 auto;padding:0 22px 88px;position:relative;z-index:1}
-.sec-tag{
-  font-family:'JetBrains Mono',monospace;font-size:.7rem;
-  letter-spacing:.18em;text-transform:uppercase;color:var(--cel);margin-bottom:8px;
+/* ════════════════════════════════════════════
+   FEATURES GRID
+══════════════════════════════════════════════ */
+.features{
+  max-width:1300px;margin:0 auto;
+  padding:0 28px 100px;
+  position:relative;z-index:1;
 }
-.sec-tit{
-  font-family:'Bebas Neue',sans-serif;font-size:2.3rem;
-  letter-spacing:.05em;color:var(--white);margin-bottom:30px;
+.sec-kicker{
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--cel);margin-bottom:8px;
 }
-.feats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:15px}
-
+.sec-title{
+  font-family:'Bebas Neue',sans-serif;font-size:2.6rem;
+  letter-spacing:.04em;color:var(--white);margin-bottom:36px;
+}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:16px}
 .feat{
-  background:linear-gradient(160deg,var(--navy-s),var(--navy-m));
-  border:1px solid var(--border-l);border-radius:var(--radius);
-  padding:24px 20px;transition:border-color .25s,transform .25s,box-shadow .25s;
+  background:linear-gradient(155deg,var(--s1),var(--s2));
+  border:1.5px solid var(--bdr);border-radius:18px;
+  padding:26px 22px;transition:.25s;
 }
-.feat:hover{
-  border-color:var(--cel);transform:translateY(-5px);
-  box-shadow:0 12px 32px rgba(116,172,223,.15);
-}
-.feat-ico{font-size:1.8rem;margin-bottom:12px}
-.feat-nom{font-weight:800;font-size:.93rem;margin-bottom:6px;color:var(--white)}
-.feat-dsc{color:var(--muted-l);font-size:.81rem;line-height:1.65}
+.feat:hover{border-color:var(--cel);transform:translateY(-5px);box-shadow:0 16px 40px rgba(116,172,223,.16)}
+.feat-i{font-size:1.9rem;margin-bottom:14px}
+.feat-n{font-weight:900;font-size:.94rem;margin-bottom:6px;color:var(--white)}
+.feat-d{color:var(--mut2);font-size:.82rem;line-height:1.65}
 
-/* ── MODAL ── */
+/* ════════════════════════════════════════════
+   MODAL PUBLICIDAD
+══════════════════════════════════════════════ */
 .modal-bg{
-  display:none;position:fixed;inset:0;z-index:1000;
-  background:rgba(7,30,56,.95);
-  backdrop-filter:blur(10px);
+  display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(5,15,30,.96);
+  backdrop-filter:blur(12px);
   align-items:center;justify-content:center;
 }
-.modal-bg.on{display:flex;animation:fdbg .22s ease}
+.modal-bg.vis{display:flex;animation:fdbg .22s ease}
 @keyframes fdbg{from{opacity:0}to{opacity:1}}
 
 .modal{
-  background:linear-gradient(160deg,var(--navy-s),var(--navy-m));
-  border:1.5px solid var(--border-l);border-radius:22px;
-  padding:30px;max-width:560px;width:92%;
-  box-shadow:0 28px 70px rgba(0,0,0,.7),0 0 0 1px rgba(116,172,223,.08) inset;
+  background:linear-gradient(155deg,var(--s1),var(--s2));
+  border:1.5px solid var(--bdr2);border-radius:24px;
+  padding:32px;max-width:580px;width:93%;
+  box-shadow:0 32px 80px rgba(0,0,0,.75),inset 0 1px 0 rgba(116,172,223,.08);
   animation:mpop .32s cubic-bezier(.34,1.56,.64,1);
 }
-@keyframes mpop{from{opacity:0;transform:scale(.88) translateY(22px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes mpop{from{opacity:0;transform:scale(.87) translateY(24px)}to{opacity:1;transform:scale(1)}}
 
-.modal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.modal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .modal-tit{
   font-family:'Bebas Neue',sans-serif;font-size:1rem;
-  letter-spacing:.12em;color:var(--muted);
+  letter-spacing:.14em;color:var(--mut2);text-transform:uppercase;
 }
 .modal-cnt{
   font-family:'JetBrains Mono',monospace;font-size:.76rem;
-  color:var(--muted);background:var(--navy);
-  border:1px solid var(--border);padding:3px 11px;border-radius:6px;
+  color:var(--mut);background:var(--bg);
+  border:1px solid var(--bdr);padding:4px 12px;border-radius:7px;
 }
-.modal-cnt.ok{color:var(--ok);border-color:rgba(61,220,132,.32)}
+.modal-cnt.ok{color:var(--ok);border-color:rgba(46,204,113,.35)}
 
 .modal-ad{
-  width:100%;height:260px;
-  background:linear-gradient(145deg,var(--navy) 0%,var(--navy-m) 100%);
-  border:1.5px dashed var(--border-l);border-radius:14px;
+  width:100%;height:270px;
+  background:linear-gradient(145deg,var(--bg),var(--s2));
+  border:1.5px dashed var(--bdr2);border-radius:16px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:10px;cursor:pointer;margin-bottom:22px;
-  transition:border-color .25s,background .25s;position:relative;overflow:hidden;
+  gap:10px;cursor:pointer;margin-bottom:24px;
+  transition:.25s;position:relative;overflow:hidden;
 }
 .modal-ad::before{
   content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(-45deg,transparent 0,transparent 12px,rgba(116,172,223,.018) 12px,rgba(116,172,223,.018) 13px);
+  background:repeating-linear-gradient(-45deg,transparent 0,transparent 14px,rgba(116,172,223,.018) 14px,rgba(116,172,223,.018) 15px);
 }
 .modal-ad:hover{border-color:var(--cel);background:rgba(116,172,223,.04)}
-.modal-ad-lbl{
-  font-family:'JetBrains Mono',monospace;font-size:.68rem;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-  position:relative;z-index:1;text-align:center;
-}
-.modal-ad-size{
-  font-family:'Bebas Neue',sans-serif;font-size:2rem;
-  letter-spacing:.05em;color:var(--border-l);position:relative;z-index:1;
-}
+.mad-l{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);position:relative;z-index:1;text-align:center}
+.mad-s{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.05em;color:var(--bdr2);position:relative;z-index:1}
 
-.modal-ftr{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.modal-note{color:var(--muted);font-size:.78rem;max-width:220px;line-height:1.55}
+.modal-ft{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.modal-note{color:var(--mut);font-size:.78rem;max-width:230px;line-height:1.55}
 .modal-acts{display:flex;gap:10px;align-items:center}
 
 .btn-cont{
-  padding:13px 28px;border-radius:11px;
+  padding:13px 30px;border-radius:12px;
   background:linear-gradient(135deg,var(--cel-dd),var(--cel));
-  color:var(--navy);font-family:'Bebas Neue',sans-serif;
-  font-size:1.1rem;letter-spacing:.1em;
+  color:var(--bg);font-family:'Bebas Neue',sans-serif;
+  font-size:1.15rem;letter-spacing:.1em;
   border:none;cursor:pointer;white-space:nowrap;
-  transition:transform .15s,box-shadow .2s,opacity .2s;
-  box-shadow:0 4px 18px rgba(116,172,223,.35);
+  transition:.18s;box-shadow:0 6px 20px rgba(116,172,223,.35);
 }
-.btn-cont:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 26px rgba(116,172,223,.55)}
-.btn-cont:disabled{opacity:.28;cursor:not-allowed}
-
-.btn-gold{
+.btn-cont:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 28px rgba(116,172,223,.55)}
+.btn-cont:disabled{opacity:.25;cursor:not-allowed}
+.btn-cont.gold{
   background:linear-gradient(135deg,var(--gold-d),var(--gold));
-  box-shadow:0 4px 18px rgba(246,180,14,.35);
+  box-shadow:0 6px 20px rgba(246,180,14,.35);
 }
-.btn-gold:hover:not(:disabled){box-shadow:0 8px 26px rgba(246,180,14,.55)}
-
-.btn-cancel{
-  background:none;border:none;color:var(--muted);
-  font-size:.8rem;cursor:pointer;font-family:'Nunito',sans-serif;
-  text-decoration:underline;white-space:nowrap;
+.btn-cont.gold:hover:not(:disabled){box-shadow:0 10px 28px rgba(246,180,14,.55)}
+.btn-x{
+  background:none;border:none;color:var(--mut);font-size:.8rem;
+  cursor:pointer;font-family:'Nunito',sans-serif;text-decoration:underline;
 }
-.btn-cancel:hover{color:var(--text)}
+.btn-x:hover{color:var(--txt)}
 
-/* ── FOOTER ── */
+/* ════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════ */
 footer{
   border-top:3px solid var(--cel);
-  padding:28px 36px;
+  padding:30px 40px;
+  background:var(--s1);
   display:flex;align-items:center;justify-content:space-between;
   flex-wrap:wrap;gap:18px;
-  background:var(--navy-s);position:relative;z-index:1;
+  position:relative;z-index:1;
 }
-.foot-logo{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:.07em;color:var(--white)}
-footer nav{display:flex;gap:20px}
-footer nav a{color:var(--muted);font-size:.8rem;text-decoration:none;transition:color .2s}
+.foot-brand{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.06em;color:var(--white)}
+footer nav{display:flex;gap:22px}
+footer nav a{color:var(--mut);font-size:.82rem;text-decoration:none;transition:color .2s}
 footer nav a:hover{color:var(--cel)}
-.foot-copy{color:var(--muted);font-size:.72rem}
+.foot-copy{color:var(--mut);font-size:.72rem}
 
 /* ── TOAST ── */
 .toast{
-  position:fixed;bottom:26px;left:50%;
-  transform:translateX(-50%) translateY(110px);
-  background:var(--navy-m);border-radius:12px;
-  padding:13px 24px;font-size:.9rem;font-weight:700;
-  z-index:2000;transition:transform .32s cubic-bezier(.34,1.4,.64,1);
-  white-space:nowrap;border:1.5px solid var(--border-l);
-  box-shadow:0 10px 30px rgba(0,0,0,.5);
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(120px);
+  background:var(--s2);border-radius:14px;
+  padding:14px 26px;font-size:.92rem;font-weight:700;
+  z-index:2000;transition:transform .35s cubic-bezier(.34,1.4,.64,1);
+  white-space:nowrap;border:1.5px solid var(--bdr2);
+  box-shadow:0 14px 36px rgba(0,0,0,.55);
 }
-.toast.on{transform:translateX(-50%) translateY(0)}
+.toast.vis{transform:translateX(-50%) translateY(0)}
 .toast.ok{border-color:var(--cel);color:var(--cel)}
 .toast.err{border-color:var(--danger);color:var(--danger)}
 .toast.gold{border-color:var(--gold);color:var(--gold)}
 
-.sep{max-width:1130px;margin:20px auto 36px;padding:0 22px;position:relative;z-index:1}
-.sep hr{border:none;border-top:1px solid var(--border)}
+/* ── SEP ── */
+.sep{max-width:1300px;margin:20px auto 40px;padding:0 28px;position:relative;z-index:1}
+.sep hr{border:none;border-top:1px solid var(--bdr)}
 
-@media(max-width:620px){
+@media(max-width:700px){
   header{padding:0 18px}
-  .hero{padding:48px 18px 36px}
-  .wrap{padding:0 16px 64px}
-  .dl-row.on{flex-direction:column}
-  .btn-dl{padding:16px}
+  .hero{padding:52px 18px 40px}
+  h1{font-size:3.2rem}
+  .main{padding:0 16px 70px}
+  .dl-bar.vis{flex-wrap:wrap}
   footer{padding:22px 18px}
+  .header-mid{display:none}
 }
 </style>
 </head>
 <body>
 
-<!-- ══ HEADER ══════════════════════════════════════════════════ -->
+<!-- SOL DE MAYO decorativo fijo -->
+<svg class="sol-deco" viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(280,280)">
+    <!-- 32 rayos alternados rectos y curvos -->
+    <g stroke="#74ACDF" fill="none">
+      <!-- Rayos rectos -->
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(22.5)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(45)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(67.5)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(90)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(112.5)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(135)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(157.5)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(180)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(202.5)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(225)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(247.5)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(270)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(292.5)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(315)"/>
+      <line x1="0" y1="-95" x2="0" y2="-250" stroke-width="3" transform="rotate(337.5)"/>
+    </g>
+    <circle r="85" fill="#F6B40E" opacity=".9"/>
+    <circle r="55" fill="#c48c00" opacity=".5"/>
+    <circle r="28" fill="#F6B40E"/>
+    <!-- Ojos y boca del sol -->
+    <circle cx="-16" cy="-10" r="6" fill="#071e38"/>
+    <circle cx="16" cy="-10" r="6" fill="#071e38"/>
+    <path d="M-16,14 Q0,28 16,14" stroke="#071e38" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>
+
+<!-- ════════════════════════════════
+     HEADER
+═══════════════════════════════════ -->
 <header>
   <a class="logo" href="#">
-    <!-- Bandera Argentina como ícono -->
-    <div class="flag-icon">
-      <div class="flag-stripe-top"></div>
-      <div class="flag-stripe-mid">
-        <div class="flag-sun"></div>
-      </div>
-      <div class="flag-stripe-bot"></div>
+    <!-- Bandera Argentina SVG correcta -->
+    <div class="flag-wrap">
+      <svg viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+        <rect width="60" height="40" fill="#74ACDF"/>
+        <rect y="13.3" width="60" height="13.4" fill="#fff"/>
+        <!-- Sol de Mayo simplificado -->
+        <g transform="translate(30,20)">
+          <circle r="5.5" fill="#F6B40E"/>
+          <g stroke="#F6B40E" stroke-width="1.2" stroke-linecap="round">
+            <line y1="-7.5" y2="-10.5"/>
+            <line y1="-7.5" y2="-10.5" transform="rotate(45)"/>
+            <line y1="-7.5" y2="-10.5" transform="rotate(90)"/>
+            <line y1="-7.5" y2="-10.5" transform="rotate(135)"/>
+            <line y1="-7.5" y2="-10.5" transform="rotate(180)"/>
+            <line y1="-7.5" y2="-10.5" transform="rotate(225)"/>
+            <line y1="-7.5" y2="-10.5" transform="rotate(270)"/>
+            <line y1="-7.5" y2="-10.5" transform="rotate(315)"/>
+          </g>
+        </g>
+      </svg>
     </div>
-    <div class="logo-text">Vector<span>ARG</span></div>
+    <div class="logo-name">Vector<em>ARG</em></div>
   </a>
-  <div class="header-r">
-    <span class="badge">⚡ 100% Gratis</span>
+
+  <div class="header-mid">
+    <span class="hpill hpill-blue">✦ Gratis</span>
+    <span class="hpill hpill-blue">Sin registro</span>
+    <span class="hpill hpill-gold">🇦🇷 Hecho en Argentina</span>
   </div>
 </header>
 
-<!-- ══ HERO ══════════════════════════════════════════════════════ -->
+<!-- ════════════════════════════════
+     HERO
+═══════════════════════════════════ -->
 <div class="hero">
-  <div class="hero-pill">✦ Sin registro · Sin marcas de agua · Sin límites</div>
-  <h1>Tu imagen,<br>hecha <em>vector perfecto</em></h1>
+  <div class="hero-sup">
+    <span class="sol-spin">✦</span>
+    SVG perfecto · Bordes suaves · Sin fondo · 100% gratis
+  </div>
+  <h1>
+    Convertí tu imagen<br>
+    en un <span class="azul">vector</span> <span class="dorado">perfecto</span>
+  </h1>
   <p class="hero-sub">
-    Subí cualquier imagen y VectorARG detecta automáticamente los colores, 
-    elimina el fondo y genera un SVG suave y nítido — todo en tu navegador.
+    Subí tu logo, foto o ilustración y VectorARG detecta automáticamente
+    el modo ideal, limpia los bordes y genera un SVG nítido —
+    todo en tu navegador, sin subir nada.
   </p>
 </div>
 
-<!-- ══ AD TOP ══════════════════════════════════════════════════ -->
-<div class="ad-band" style="margin-bottom:30px">
-  <div class="ad-blk ad-728" onclick="window.open('https://google.com','_blank')">
+<!-- ════════════════════════════════
+     AD TOP
+═══════════════════════════════════ -->
+<div class="ad-wrap" style="margin-bottom:32px">
+  <div class="ad-blk ad-top" onclick="window.open('https://google.com','_blank')">
     <!-- PEGÁ TU BLOQUE ADSENSE 728×90 ACÁ -->
-    PUBLICIDAD · 728×90 — Hacé clic para visitar el anunciante
+    PUBLICIDAD · 728×90
   </div>
 </div>
 
-<!-- ══ LAYOUT PRINCIPAL ══════════════════════════════════════════ -->
-<div class="wrap">
-  <div class="tool">
+<!-- ════════════════════════════════
+     MAIN LAYOUT
+═══════════════════════════════════ -->
+<div class="main">
 
-    <!-- UPLOAD -->
+  <!-- ── COLUMNA HERRAMIENTA ── -->
+  <div class="col-tool">
+
+    <!-- ZONA UPLOAD -->
     <div class="upload-zona" id="uploadZona">
-      <div class="upload-icono">🖼️</div>
-      <div class="upload-titulo">Soltá tu imagen acá</div>
+      <div class="upload-icon-wrap">🖼️</div>
+      <div class="upload-h">Soltá tu imagen acá</div>
       <p class="upload-sub">
-        o hacé clic para elegir un archivo · PNG, JPG, GIF, BMP, WEBP
+        o hacé clic para elegir un archivo de tu dispositivo
       </p>
-      <div class="chips">
+      <div class="upload-chips">
         <span class="chip">PNG</span>
         <span class="chip">JPG</span>
         <span class="chip">GIF</span>
         <span class="chip">BMP</span>
         <span class="chip">WEBP</span>
       </div>
-      <div class="auto-tag">✦ Detección automática de colores activada</div>
     </div>
     <input type="file" id="fileInput" accept="image/png,image/jpeg,image/gif,image/bmp,image/webp" style="display:none">
 
     <!-- PROGRESO -->
-    <div class="prog-wrap" id="progWrap">
+    <div class="prog-panel" id="progPanel">
       <div class="prog-pct" id="progPct">0%</div>
-      <div class="prog-sublabel">VECTORIZANDO TU IMAGEN</div>
-      <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
-      <div class="prog-txt" id="progTxt">Iniciando…</div>
-    </div>
-
-    <!-- PREVIEW -->
-    <div class="prev-panel" id="prevPanel">
-      <div class="prev-box">
-        <div class="prev-hdr">
-          <span class="prev-lbl">Original</span>
-          <span class="prev-badge" id="origBadge">—</span>
-        </div>
-        <div class="prev-canvas"><img id="origImg" src="" alt="Original"></div>
-      </div>
-      <div class="prev-box">
-        <div class="prev-hdr">
-          <span class="prev-lbl">Vector SVG</span>
-          <span class="prev-badge gold" id="svgBadge">pendiente</span>
-        </div>
-        <div class="prev-canvas" id="svgCanvas">
-          <span style="color:var(--muted);font-size:.78rem;font-family:'JetBrains Mono',monospace">
-            Presioná Vectorizar →
-          </span>
-        </div>
+      <div class="prog-step" id="progStep">Iniciando…</div>
+      <div class="prog-track">
+        <div class="prog-fill" id="progFill"></div>
       </div>
     </div>
 
-    <!-- DESCARGA -->
-    <div class="dl-row" id="dlRow">
+    <!-- ══ COMPARADOR DRAG ══ -->
+    <div class="compare-outer" id="compareOuter">
+      <div class="compare-orig"><img id="cmpOrig" src="" alt="Original"></div>
+      <div class="compare-svg" id="cmpSvg"></div>
+
+      <div class="compare-line" id="cmpLine"></div>
+      <div class="compare-tag ctag-orig">ORIGINAL</div>
+      <div class="compare-tag ctag-vec">VECTOR SVG</div>
+      <div class="compare-handle" id="cmpHandle" title="Arrastrá para comparar">
+        <svg width="22" height="14" viewBox="0 0 22 14" fill="none">
+          <path d="M7 1L1 7L7 13M15 1L21 7L15 13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- BARRA DESCARGA -->
+    <div class="dl-bar" id="dlBar">
+      <div class="dl-file-icon">✦</div>
       <div class="dl-info">
-        <div class="dl-icon">✦</div>
-        <div>
-          <div class="dl-name" id="dlName">vector.svg</div>
-          <div class="dl-meta" id="dlMeta">SVG · Listo para descargar</div>
-        </div>
+        <div class="dl-name" id="dlName">vector.svg</div>
+        <div class="dl-meta" id="dlMeta">SVG · Listo</div>
       </div>
-      <button class="btn-dl" id="btnDl">⬇ Descargar SVG</button>
-      <button class="btn-nuevo" id="btnNuevo">↺ Nueva</button>
+      <div class="dl-actions">
+        <button class="btn-dl" id="btnDl">⬇ Descargar SVG</button>
+        <button class="btn-nuevo" id="btnNuevo">↺ Nueva</button>
+      </div>
     </div>
 
+    <!-- BOTÓN VECTORIZAR -->
     <button class="btn-vect" id="btnVect" disabled>
-      ✦ VECTORIZAR IMAGEN
+      ✦ &nbsp;VECTORIZAR IMAGEN
     </button>
 
   </div>
 
-  <!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
+  <!-- ── SIDEBAR ── -->
   <div class="sidebar">
 
+    <!-- MODO -->
     <div class="card">
-      <div class="card-tit">⚙ Parámetros</div>
+      <div class="card-head">⚡ Modo de vectorización</div>
+
+      <div class="modo-grid">
+        <div class="modo-btn activo" data-modo="logo">
+          <div class="modo-ico">🎨</div>
+          <div class="modo-nom">Logo</div>
+          <div class="modo-desc">Colores planos, bordes nítidos</div>
+        </div>
+        <div class="modo-btn" data-modo="ilustracion">
+          <div class="modo-ico">🖼️</div>
+          <div class="modo-nom">Ilustración</div>
+          <div class="modo-desc">Mezcla de colores suave</div>
+        </div>
+        <div class="modo-btn" data-modo="foto">
+          <div class="modo-ico">📷</div>
+          <div class="modo-nom">Foto</div>
+          <div class="modo-desc">Muchos colores y degradés</div>
+        </div>
+      </div>
 
       <!-- Colores AUTO -->
       <div class="campo">
-        <label>
-          Cantidad de colores
-          <span class="val auto" id="vColores">AUTO</span>
-        </label>
-        <input type="range" id="sColores" min="0" max="128" step="4" value="0">
-        <div class="campo-desc">
-          En <strong style="color:var(--gold)">0 = AUTO</strong>: VectorARG analiza la imagen y elige el número ideal de colores. Subí el slider para forzar una cantidad específica.
+        <div class="campo-lbl">
+          Colores
+          <span class="campo-val auto" id="vColores">AUTO</span>
         </div>
-      </div>
-
-      <!-- Suavidad de bordes -->
-      <div class="campo">
-        <label>
-          Suavidad de bordes
-          <span class="val" id="vSuave">Alta</span>
-        </label>
-        <input type="range" id="sSuave" min="1" max="3" value="3">
-        <div class="campo-desc">
-          <strong style="color:var(--gold)">Alta</strong> = curvas Bézier suaves y naturales. Baja = bordes más angulares.
-        </div>
-      </div>
-
-      <!-- Reducción de ruido -->
-      <div class="campo">
-        <label>
-          Reducción de ruido
-          <span class="val" id="vBlur">Ninguna</span>
-        </label>
-        <input type="range" id="sBlur" min="0" max="4" value="0">
-        <div class="campo-desc">Aplica suavizado previo. Útil en fotos con grano o compresión JPEG.</div>
-      </div>
-
-      <!-- Fondo transparente toggle -->
-      <div class="campo" style="margin-bottom:0">
-        <label style="margin-bottom:8px">Fondo</label>
-        <div class="toggle-row" id="toggleFondo">
-          <div>
-            <div class="toggle-label">Sin fondo (transparente)</div>
-            <div class="toggle-sub">Predeterminado — ideal para logos</div>
-          </div>
-          <div class="toggle-switch on" id="switchFondo"></div>
+        <input type="range" id="sColores" min="0" max="64" step="2" value="0">
+        <div class="campo-sub">
+          <strong style="color:var(--gold)">AUTO</strong> analiza tu imagen y elige el número óptimo. Subí para forzar.
         </div>
       </div>
     </div>
 
-    <!-- Info privacidad -->
+    <!-- FONDO + PRIVACIDAD -->
     <div class="card">
-      <div class="card-tit">🔒 Tu imagen es privada</div>
-      <p style="color:var(--muted-l);font-size:.83rem;line-height:1.7">
-        Todo el procesamiento ocurre <strong style="color:var(--text)">100% en tu navegador</strong>. Ningún archivo se sube a ningún servidor. Tu imagen nunca sale de tu dispositivo.
-      </p>
+      <div class="card-head">🔲 Opciones</div>
+
+      <div class="toggle-row" id="toggleFondo">
+        <div class="toggle-texts">
+          <div class="t-main">Sin fondo (transparente)</div>
+          <div class="t-sub">Ideal para logos e íconos</div>
+        </div>
+        <div class="toggle on" id="switchFondo"></div>
+      </div>
+
+      <div style="margin-top:16px;color:var(--mut);font-size:.8rem;line-height:1.7;padding:14px;border-radius:10px;background:var(--s3);border:1px solid var(--bdr)">
+        🔒 Tu imagen <strong style="color:var(--txt)">nunca sale de tu navegador</strong>. Procesamiento 100% local, cero servidores.
+      </div>
     </div>
 
     <!-- AD SIDEBAR -->
-    <div class="ad-blk ad-300" onclick="window.open('https://google.com','_blank')">
-      <!-- PEGÁ TU BLOQUE ADSENSE 300×250 ACÁ -->
+    <div class="ad-blk ad-side" onclick="window.open('https://google.com','_blank')">
+      <!-- ADSENSE 300×250 ACÁ -->
       PUBLICIDAD<br>300×250
     </div>
 
   </div>
 </div>
 
+<!-- SEP -->
 <div class="sep"><hr></div>
 
-<!-- ══ FEATURES ════════════════════════════════════════════════ -->
-<section class="feats">
-  <div class="sec-tag">Por qué VectorARG</div>
-  <div class="sec-tit">Hecho para creadores 🇦🇷</div>
-  <div class="feats-grid">
+<!-- ════════════════════════════════
+     FEATURES
+═══════════════════════════════════ -->
+<section class="features">
+  <div class="sec-kicker">Por qué VectorARG</div>
+  <div class="sec-title">Hecho para creadores 🇦🇷</div>
+  <div class="feat-grid">
     <div class="feat">
-      <div class="feat-ico">🎯</div>
-      <div class="feat-nom">Bordes Suaves</div>
-      <div class="feat-dsc">Curvas Bézier optimizadas para resultados limpios y naturales sin pixelado.</div>
+      <div class="feat-i">✏️</div>
+      <div class="feat-n">Bordes Suaves</div>
+      <div class="feat-d">Sharpening previo + curvas Bézier de baja tolerancia. Bordes limpios y naturales sin pixelado.</div>
     </div>
     <div class="feat">
-      <div class="feat-ico">🤖</div>
-      <div class="feat-nom">Colores Auto</div>
-      <div class="feat-dsc">Analiza la imagen y detecta la cantidad ideal de colores para máxima fidelidad.</div>
+      <div class="feat-i">🤖</div>
+      <div class="feat-n">Colores Auto</div>
+      <div class="feat-d">Analiza la paleta real y detecta cuántos colores usar para fidelidad máxima.</div>
     </div>
     <div class="feat">
-      <div class="feat-ico">🔲</div>
-      <div class="feat-nom">Sin Fondo</div>
-      <div class="feat-dsc">Transparencia habilitada por defecto. Perfecto para logos, íconos y stickers.</div>
+      <div class="feat-i">⇄</div>
+      <div class="feat-n">Comparador en Vivo</div>
+      <div class="feat-d">Arrastrá el slider para ver original vs vector en tiempo real sobre la misma imagen.</div>
     </div>
     <div class="feat">
-      <div class="feat-ico">🔒</div>
-      <div class="feat-nom">100% Privado</div>
-      <div class="feat-dsc">Tu imagen nunca sale de tu navegador. Cero servidores en el medio.</div>
+      <div class="feat-i">🔲</div>
+      <div class="feat-n">Sin Fondo</div>
+      <div class="feat-d">Fondo transparente por defecto. Perfecto para logos, íconos y stickers.</div>
     </div>
     <div class="feat">
-      <div class="feat-ico">📐</div>
-      <div class="feat-nom">Escalable</div>
-      <div class="feat-dsc">SVG que se ve perfecto desde un avatar hasta una cartelería de ruta.</div>
+      <div class="feat-i">🔒</div>
+      <div class="feat-n">100% Privado</div>
+      <div class="feat-d">Nada se sube. Ni un solo píxel sale de tu máquina.</div>
     </div>
     <div class="feat">
-      <div class="feat-ico">🧉</div>
-      <div class="feat-nom">Hecho en Argentina</div>
-      <div class="feat-dsc">Funciona bien incluso en conexiones lentas. Para todos los rincones del país.</div>
+      <div class="feat-i">🧉</div>
+      <div class="feat-n">Hecho en Argentina</div>
+      <div class="feat-d">Anda perfecto hasta con conexiones del interior. Para todos los rincones del país.</div>
     </div>
   </div>
 </section>
 
-<!-- ══ AD BOTTOM ════════════════════════════════════════════════ -->
-<div class="ad-band" style="padding:0 22px 64px">
-  <div class="ad-blk ad-728" onclick="window.open('https://google.com','_blank')">
+<!-- AD BOTTOM -->
+<div class="ad-wrap" style="padding:0 0 70px">
+  <div class="ad-blk ad-bot" onclick="window.open('https://google.com','_blank')">
     PUBLICIDAD · 728×90
   </div>
 </div>
 
-<!-- ══ FOOTER ════════════════════════════════════════════════════ -->
+<!-- ════════════════════════════════
+     FOOTER
+═══════════════════════════════════ -->
 <footer>
-  <div class="foot-logo">🇦🇷 VectorARG</div>
+  <div class="foot-brand">🇦🇷 VectorARG</div>
   <nav>
     <a href="#">Privacidad</a>
     <a href="#">Términos</a>
     <a href="#">Contacto</a>
   </nav>
-  <div class="foot-copy">© 2025 VectorARG · Procesamiento local · Hecho con ☕ y 🧉 en Argentina</div>
+  <div class="foot-copy">© 2025 VectorARG · Procesamiento local · Con ☕ y 🧉 desde Argentina</div>
 </footer>
 
 <div class="toast" id="toast"></div>
 
-<!-- ══ MODAL VECTORIZAR ══════════════════════════════════════════ -->
+<!-- ════════════════════════════════
+     MODAL VECTORIZAR
+═══════════════════════════════════ -->
 <div class="modal-bg" id="mVect">
   <div class="modal">
     <div class="modal-top">
-      <div class="modal-tit">PUBLICIDAD · Un momento antes de vectorizar</div>
+      <div class="modal-tit">Publicidad · Un momento antes de vectorizar</div>
       <div class="modal-cnt" id="cntVect">Esperá <span id="secVect">5</span>s</div>
     </div>
     <div class="modal-ad" id="adVect">
-      <div class="modal-ad-lbl">Espacio publicitario · Hacé clic para visitar</div>
-      <div class="modal-ad-size">300 × 250</div>
-      <div class="modal-ad-lbl">Así mantenemos VectorARG gratuito para todos 🇦🇷</div>
-      <!-- Reemplazá con tu bloque real de AdSense:
-      <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px"
-           data-ad-client="ca-pub-TU_ID" data-ad-slot="TU_SLOT"></ins>
-      <script>(adsbygoogle=window.adsbygoogle||[]).push({});<\/script>
-      -->
+      <div class="mad-l">Espacio publicitario · Hacé clic para visitar el anunciante</div>
+      <div class="mad-s">300 × 250</div>
+      <div class="mad-l">Así mantenemos VectorARG gratuito para todos 🇦🇷</div>
+      <!-- <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-TU_ID" data-ad-slot="SLOT_ID"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});<\/script> -->
     </div>
-    <div class="modal-ftr">
-      <div class="modal-note">Este breve anuncio mantiene VectorARG gratis. ¡Gracias por el apoyo!</div>
+    <div class="modal-ft">
+      <div class="modal-note">Este breve anuncio mantiene VectorARG gratis. ¡Gracias!</div>
       <div class="modal-acts">
-        <button class="btn-cancel" id="cancelVect">Cancelar</button>
+        <button class="btn-x" id="cancelVect">Cancelar</button>
         <button class="btn-cont" id="contVect" disabled>Continuar →</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL DESCARGA ════════════════════════════════════════════ -->
+<!-- ════════════════════════════════
+     MODAL DESCARGA
+═══════════════════════════════════ -->
 <div class="modal-bg" id="mDl">
   <div class="modal">
     <div class="modal-top">
-      <div class="modal-tit">PUBLICIDAD · Tu SVG está listo</div>
+      <div class="modal-tit">Publicidad · Tu SVG está listo</div>
       <div class="modal-cnt" id="cntDl">Esperá <span id="secDl">5</span>s</div>
     </div>
     <div class="modal-ad" id="adDl">
-      <div class="modal-ad-lbl">Espacio publicitario · Hacé clic para visitar</div>
-      <div class="modal-ad-size">300 × 250</div>
-      <div class="modal-ad-lbl">¡Tu vector te espera! Gracias por usar VectorARG 🧉</div>
+      <div class="mad-l">Espacio publicitario · Hacé clic para visitar el anunciante</div>
+      <div class="mad-s">300 × 250</div>
+      <div class="mad-l">¡Tu vector te espera! Gracias por usar VectorARG 🧉</div>
       <!-- <ins class="adsbygoogle" ...></ins> -->
     </div>
-    <div class="modal-ftr">
-      <div class="modal-note">La descarga empieza al tocar el botón. ¡Gracias!</div>
+    <div class="modal-ft">
+      <div class="modal-note">La descarga empieza al tocar el botón. ¡Gracias por el apoyo!</div>
       <div class="modal-acts">
-        <button class="btn-cancel" id="cancelDl">Cancelar</button>
-        <button class="btn-cont btn-gold" id="contDl" disabled>⬇ Descargar SVG</button>
+        <button class="btn-x" id="cancelDl">Cancelar</button>
+        <button class="btn-cont gold" id="contDl" disabled>⬇ Descargar SVG</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ JAVASCRIPT ════════════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════════════ -->
 <script>
 'use strict';
 
-// ─── Estado ─────────────────────────────────────────────────────
-let origFile = null, origImgEl = null, svgUrl = null, fileBase = 'vector';
-let fondoTransparente = true;  // predeterminado: sin fondo
+// ──────────────────────────────────────────────────────────────
+//  ESTADO
+// ──────────────────────────────────────────────────────────────
+let origFile   = null;
+let origImgEl  = null;   // HTMLImageElement
+let svgResult  = null;   // string SVG
+let svgUrl     = null;   // blob URL
+let fileBase   = 'vector';
+let fondoTrans = true;   // sin fondo por defecto
+let modoActual = 'logo';
 
-// ─── Refs ────────────────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-const uploadZona = $('uploadZona');
-const fileInput  = $('fileInput');
-const btnVect    = $('btnVect');
-const progWrap   = $('progWrap');
-const progFill   = $('progFill');
-const progTxt    = $('progTxt');
-const progPct    = $('progPct');
-const prevPanel  = $('prevPanel');
-const origImgDOM = $('origImg');
-const svgCanvas  = $('svgCanvas');
-const origBadge  = $('origBadge');
-const svgBadge   = $('svgBadge');
-const dlRow      = $('dlRow');
-const btnDl      = $('btnDl');
-const btnNuevo   = $('btnNuevo');
-const dlName     = $('dlName');
-const dlMeta     = $('dlMeta');
-const sColores   = $('sColores');
-const sSuave     = $('sSuave');
-const sBlur      = $('sBlur');
-const vColores   = $('vColores');
-const vSuave     = $('vSuave');
-const vBlur      = $('vBlur');
-const switchFondo= $('switchFondo');
-const toggleFondo= $('toggleFondo');
+// ──────────────────────────────────────────────────────────────
+//  REFERENCIAS DOM
+// ──────────────────────────────────────────────────────────────
+const G = id => document.getElementById(id);
 
-// ─── Labels dinámicos ───────────────────────────────────────────
-const SUAVE_LABELS = ['Baja','Media','Alta'];
-const BLUR_LABELS  = ['Ninguna','Leve','Suave','Fuerte','Máxima'];
+const uploadZona  = G('uploadZona');
+const fileInput   = G('fileInput');
+const btnVect     = G('btnVect');
+const progPanel   = G('progPanel');
+const progFill    = G('progFill');
+const progStep    = G('progStep');
+const progPct     = G('progPct');
+const compareOuter= G('compareOuter');
+const cmpOrig     = G('cmpOrig');
+const cmpSvg      = G('cmpSvg');
+const cmpLine     = G('cmpLine');
+const cmpHandle   = G('cmpHandle');
+const dlBar       = G('dlBar');
+const btnDl       = G('btnDl');
+const btnNuevo    = G('btnNuevo');
+const dlName      = G('dlName');
+const dlMeta      = G('dlMeta');
+const sColores    = G('sColores');
+const vColores    = G('vColores');
+const toggleFondo = G('toggleFondo');
+const switchFondo = G('switchFondo');
 
+// ──────────────────────────────────────────────────────────────
+//  CONFIGURACIONES POR MODO
+// ──────────────────────────────────────────────────────────────
+const MODOS = {
+  logo: {
+    ltres: 0.05,   // umbral líneas — muy bajo = bordes muy suaves y fieles
+    qtres: 0.04,   // umbral curvas Bézier
+    cycles: 5,
+    omit: 3,
+    mcr: 0.003,
+    sharpAmt: 1.2,  // sharpening fuerte para bordes definidos
+    maxCol: 32,
+    desc: 'Optimizado para logos y colores planos'
+  },
+  ilustracion: {
+    ltres: 0.15,
+    qtres: 0.12,
+    cycles: 4,
+    omit: 5,
+    mcr: 0.008,
+    sharpAmt: 0.6,
+    maxCol: 48,
+    desc: 'Balanceado para ilustraciones'
+  },
+  foto: {
+    ltres: 0.4,
+    qtres: 0.35,
+    cycles: 3,
+    omit: 10,
+    mcr: 0.018,
+    sharpAmt: 0.2,
+    maxCol: 64,
+    desc: 'Adaptado para fotografías'
+  }
+};
+
+// ──────────────────────────────────────────────────────────────
+//  MODO SELECTOR
+// ──────────────────────────────────────────────────────────────
+document.querySelectorAll('.modo-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.modo-btn').forEach(b => b.classList.remove('activo'));
+    btn.classList.add('activo');
+    modoActual = btn.dataset.modo;
+  });
+});
+
+// ──────────────────────────────────────────────────────────────
+//  SLIDER COLORES
+// ──────────────────────────────────────────────────────────────
 sColores.addEventListener('input', () => {
   const v = +sColores.value;
   vColores.textContent = v === 0 ? 'AUTO' : String(v);
-  vColores.className   = v === 0 ? 'val auto' : 'val';
-});
-sSuave.addEventListener('input', () => {
-  vSuave.textContent = SUAVE_LABELS[+sSuave.value - 1];
-});
-sBlur.addEventListener('input', () => {
-  vBlur.textContent = BLUR_LABELS[+sBlur.value];
+  vColores.className   = v === 0 ? 'campo-val auto' : 'campo-val';
 });
 
-// ─── Toggle fondo ───────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+//  TOGGLE FONDO
+// ──────────────────────────────────────────────────────────────
 toggleFondo.addEventListener('click', () => {
-  fondoTransparente = !fondoTransparente;
-  switchFondo.classList.toggle('on', fondoTransparente);
-  const txt = toggleFondo.querySelector('.toggle-label');
-  const sub  = toggleFondo.querySelector('.toggle-sub');
-  if (fondoTransparente) {
-    txt.textContent = 'Sin fondo (transparente)';
-    sub.textContent = 'Predeterminado — ideal para logos';
-  } else {
-    txt.textContent = 'Con fondo blanco';
-    sub.textContent = 'Útil para ilustraciones con fondo';
-  }
+  fondoTrans = !fondoTrans;
+  switchFondo.classList.toggle('on', fondoTrans);
+  toggleFondo.querySelector('.t-main').textContent =
+    fondoTrans ? 'Sin fondo (transparente)' : 'Con fondo blanco';
+  toggleFondo.querySelector('.t-sub').textContent =
+    fondoTrans ? 'Ideal para logos e íconos' : 'Útil para ilustraciones con fondo';
 });
 
-// ─── UPLOAD ─────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+//  UPLOAD — click + drag
+// ──────────────────────────────────────────────────────────────
 uploadZona.addEventListener('click', () => fileInput.click());
+
 uploadZona.addEventListener('dragover', e => {
-  e.preventDefault(); uploadZona.classList.add('drag');
+  e.preventDefault(); uploadZona.classList.add('drag-over');
 });
 uploadZona.addEventListener('dragleave', e => {
-  if (!uploadZona.contains(e.relatedTarget)) uploadZona.classList.remove('drag');
+  if (!uploadZona.contains(e.relatedTarget)) uploadZona.classList.remove('drag-over');
 });
 uploadZona.addEventListener('drop', e => {
-  e.preventDefault(); uploadZona.classList.remove('drag');
+  e.preventDefault(); uploadZona.classList.remove('drag-over');
   const f = e.dataTransfer.files[0];
   if (f) cargarImagen(f);
 });
@@ -982,17 +1141,21 @@ fileInput.addEventListener('change', () => {
   fileInput.value = '';
 });
 
-// ─── Cargar imagen ───────────────────────────────────────────────
-const TIPOS_OK = ['image/png','image/jpeg','image/gif','image/bmp','image/webp'];
+// ──────────────────────────────────────────────────────────────
+//  CARGAR IMAGEN
+// ──────────────────────────────────────────────────────────────
+const TIPOS = ['image/png','image/jpeg','image/gif','image/bmp','image/webp'];
 
 function cargarImagen(file) {
-  if (!TIPOS_OK.includes(file.type)) {
+  if (!TIPOS.includes(file.type)) {
     toast('Tipo no soportado. Usá PNG, JPG, GIF, BMP o WEBP.', 'err'); return;
   }
   if (file.size > 30 * 1024 * 1024) {
     toast('Archivo muy grande. Máximo 30 MB.', 'err'); return;
   }
-  origFile = file; svgUrl = null;
+
+  origFile = file;
+  svgResult = null; svgUrl = null;
   fileBase = file.name.replace(/\.[^.]+$/, '') || 'vector';
 
   const reader = new FileReader();
@@ -1000,56 +1163,111 @@ function cargarImagen(file) {
     const img = new Image();
     img.onload = () => {
       origImgEl = img;
-      origImgDOM.src = ev.target.result;
-      origBadge.textContent = `${img.width}×${img.height}`;
-      prevPanel.classList.add('on');
-      svgCanvas.innerHTML = '<span style="color:var(--muted);font-size:.78rem;font-family:\'JetBrains Mono\',monospace">Presioná Vectorizar →</span>';
-      svgBadge.textContent = 'pendiente'; svgBadge.className = 'prev-badge gold';
-      dlRow.classList.remove('on');
+      // Mostrar en comparador (el comparador se inicia centrado)
+      cmpOrig.src = ev.target.result;
+      cmpSvg.innerHTML = '';
+
+      // Resetear comparador al 50%
+      actualizarComparador(50);
+
       uploadZona.style.display = 'none';
+      compareOuter.classList.add('vis');
+      dlBar.classList.remove('vis');
       btnVect.disabled = false;
-      toast('✔ Imagen cargada — ¡listo para vectorizar!', 'ok');
+      toast('✔ Imagen cargada. ¡A vectorizar!', 'ok');
     };
-    img.onerror = () => toast('No se pudo leer la imagen. Probá con otro archivo.', 'err');
+    img.onerror = () => toast('No se pudo leer la imagen.', 'err');
     img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 }
 
-// ─── Reset ───────────────────────────────────────────────────────
-btnNuevo.addEventListener('click', resetear);
-function resetear() {
-  origFile = null; origImgEl = null; svgUrl = null;
-  uploadZona.style.display = '';
-  prevPanel.classList.remove('on');
-  dlRow.classList.remove('on');
-  progWrap.classList.remove('on');
-  btnVect.disabled = true;
-  fileInput.value = '';
+// ──────────────────────────────────────────────────────────────
+//  COMPARADOR DRAG
+// ──────────────────────────────────────────────────────────────
+let cmpPos = 50;  // posición porcentual del handle
+let dragging = false;
+
+function actualizarComparador(pct) {
+  cmpPos = Math.max(3, Math.min(97, pct));
+  // El SVG se muestra desde el handle hacia la derecha
+  cmpSvg.style.clipPath  = `inset(0 0 0 ${cmpPos}%)`;
+  cmpLine.style.left     = cmpPos + '%';
+  cmpHandle.style.left   = cmpPos + '%';
 }
 
-// ─── Botones → modales ───────────────────────────────────────────
+cmpHandle.addEventListener('mousedown', e => {
+  dragging = true;
+  cmpHandle.classList.add('active');
+  e.preventDefault();
+});
+cmpHandle.addEventListener('touchstart', e => {
+  dragging = true;
+  cmpHandle.classList.add('active');
+  e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const rect = compareOuter.getBoundingClientRect();
+  const pct = ((e.clientX - rect.left) / rect.width) * 100;
+  actualizarComparador(pct);
+});
+document.addEventListener('touchmove', e => {
+  if (!dragging) return;
+  const rect = compareOuter.getBoundingClientRect();
+  const pct = ((e.touches[0].clientX - rect.left) / rect.width) * 100;
+  actualizarComparador(pct);
+  e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('mouseup', () => {
+  dragging = false; cmpHandle.classList.remove('active');
+});
+document.addEventListener('touchend', () => {
+  dragging = false; cmpHandle.classList.remove('active');
+});
+
+// ──────────────────────────────────────────────────────────────
+//  RESET
+// ──────────────────────────────────────────────────────────────
+btnNuevo.addEventListener('click', resetear);
+function resetear() {
+  origFile = null; origImgEl = null; svgResult = null;
+  if (svgUrl) { URL.revokeObjectURL(svgUrl); svgUrl = null; }
+  uploadZona.style.display = '';
+  compareOuter.classList.remove('vis');
+  dlBar.classList.remove('vis');
+  progPanel.classList.remove('vis');
+  btnVect.disabled = true;
+  fileInput.value  = '';
+  cmpSvg.innerHTML = '';
+  actualizarComparador(50);
+}
+
+// ──────────────────────────────────────────────────────────────
+//  BOTONES → MODALES
+// ──────────────────────────────────────────────────────────────
 btnVect.addEventListener('click', () => abrirModal('vect'));
 btnDl.addEventListener('click',   () => abrirModal('dl'));
 
-// ─── Sistema de modales ──────────────────────────────────────────
 let modalTimer = null;
 
 function abrirModal(tipo) {
   clearInterval(modalTimer);
-  const isVect = tipo === 'vect';
-  const overlay  = $(isVect ? 'mVect'    : 'mDl');
-  const secEl    = $(isVect ? 'secVect'  : 'secDl');
-  const cntEl    = $(isVect ? 'cntVect'  : 'cntDl');
-  const contBtn  = $(isVect ? 'contVect' : 'contDl');
-  const cancelBtn= $(isVect ? 'cancelVect':'cancelDl');
-  const adEl     = $(isVect ? 'adVect'   : 'adDl');
+  const isV = tipo === 'vect';
+  const overlay  = G(isV ? 'mVect'    : 'mDl');
+  const secEl    = G(isV ? 'secVect'  : 'secDl');
+  const cntEl    = G(isV ? 'cntVect'  : 'cntDl');
+  const contBtn  = G(isV ? 'contVect' : 'contDl');
+  const cancelBtn= G(isV ? 'cancelVect':'cancelDl');
+  const adEl     = G(isV ? 'adVect'   : 'adDl');
 
   let seg = 5;
   contBtn.disabled = true;
   secEl.textContent = seg;
   cntEl.className = 'modal-cnt';
-  overlay.classList.add('on');
+  overlay.classList.add('vis');
 
   const habilitar = () => {
     clearInterval(modalTimer);
@@ -1064,7 +1282,6 @@ function abrirModal(tipo) {
     if (seg <= 0) habilitar();
   }, 1000);
 
-  // Clic en el ad = habilita + abre anunciante
   const adClick = () => {
     habilitar();
     adEl.removeEventListener('click', adClick);
@@ -1072,218 +1289,266 @@ function abrirModal(tipo) {
   };
   adEl.addEventListener('click', adClick);
 
-  const continuar = () => {
+  const onCont = () => {
     if (contBtn.disabled) return;
-    cleanup();
-    cerrarModal(overlay);
-    if (isVect) iniciarVect();
-    else        ejecutarDescarga();
+    cleanup(); cerrarModal(overlay);
+    if (isV) iniciarVect(); else ejecutarDescarga();
   };
-  const cancelar = () => {
-    clearInterval(modalTimer);
-    cleanup();
-    cerrarModal(overlay);
+  const onCancel = () => {
+    clearInterval(modalTimer); cleanup(); cerrarModal(overlay);
   };
   function cleanup() {
-    contBtn.removeEventListener('click', continuar);
-    cancelBtn.removeEventListener('click', cancelar);
+    contBtn.removeEventListener('click', onCont);
+    cancelBtn.removeEventListener('click', onCancel);
     adEl.removeEventListener('click', adClick);
   }
-  contBtn.addEventListener('click', continuar);
-  cancelBtn.addEventListener('click', cancelar);
+  contBtn.addEventListener('click', onCont);
+  cancelBtn.addEventListener('click', onCancel);
 }
 
-function cerrarModal(el) { el.classList.remove('on'); }
+function cerrarModal(el) { el.classList.remove('vis'); }
 
-// ─── Descarga real ───────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+//  DESCARGA
+// ──────────────────────────────────────────────────────────────
 function ejecutarDescarga() {
   if (!svgUrl) { toast('No hay SVG para descargar.', 'err'); return; }
   const a = document.createElement('a');
   a.href = svgUrl; a.download = fileBase + '.svg'; a.click();
-  toast('⬇ Descarga iniciada. ¡Éxito!', 'gold');
+  toast('⬇ Descarga iniciada. ¡Listo!', 'gold');
 }
 
-// ─── Detección automática de colores ────────────────────────────
+// ──────────────────────────────────────────────────────────────
+//  SHARPENING — kernel convolución 3×3 para bordes nítidos
+// ──────────────────────────────────────────────────────────────
 /**
- * Analiza los píxeles del canvas (ya preparado) y devuelve
- * la cantidad óptima de colores para la vectorización.
- * Muestrea hasta 200×200 px para eficiencia.
+ * Aplica un unsharp mask suave sobre ImageData.
+ * amount: 0 = nada, 1 = normal, 2 = fuerte
  */
-function detectarColoresOptimos(ctx, w, h) {
-  // Reducir para el análisis
-  const AW = Math.min(w, 200), AH = Math.min(h, 200);
-  const canvas2 = document.createElement('canvas');
-  canvas2.width = AW; canvas2.height = AH;
-  const ctx2 = canvas2.getContext('2d');
-  ctx2.drawImage(ctx.canvas, 0, 0, w, h, 0, 0, AW, AH);
-  const data = ctx2.getImageData(0, 0, AW, AH).data;
+function sharpenImageData(src, amount) {
+  if (amount <= 0) return src;
+  const { data, width: w, height: h } = src;
+  const out = new Uint8ClampedArray(data.length);
 
-  // Agrupar colores en cubos de 24-bit → cuantización rápida en cubos de 5 bits
+  // Kernel: [0,-a,0,-a,1+4a,-a,0,-a,0]
+  const a = Math.min(amount * 0.55, 0.95);
+  const center = 1 + 4 * a;
+
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+
+      if (x === 0 || x === w-1 || y === 0 || y === h-1) {
+        // bordes: copiar directo
+        out[i]=data[i]; out[i+1]=data[i+1]; out[i+2]=data[i+2]; out[i+3]=data[i+3];
+        continue;
+      }
+
+      const iN = ((y-1)*w + x)*4;
+      const iS = ((y+1)*w + x)*4;
+      const iW = (y*w + x-1)*4;
+      const iE = (y*w + x+1)*4;
+
+      for (let c = 0; c < 3; c++) {
+        const v = Math.round(
+          center * data[i+c]
+          - a * data[iN+c]
+          - a * data[iS+c]
+          - a * data[iW+c]
+          - a * data[iE+c]
+        );
+        out[i+c] = v < 0 ? 0 : v > 255 ? 255 : v;
+      }
+      out[i+3] = data[i+3]; // alpha sin cambio
+    }
+  }
+  return new ImageData(out, w, h);
+}
+
+// ──────────────────────────────────────────────────────────────
+//  DETECCIÓN AUTOMÁTICA DE COLORES
+// ──────────────────────────────────────────────────────────────
+/**
+ * Muestrea imageData y estima la cantidad óptima de colores
+ * basándose en la diversidad cromática real (cubos de 5 bits).
+ */
+function autoColores(imageData, modoMax) {
+  const data = imageData.data;
   const cubos = new Set();
-  for (let i = 0; i < data.length; i += 4) {
-    if (data[i+3] < 30) continue; // ignorar transparentes
+  const step  = 4 * 4; // cada 4 píxeles
+
+  for (let i = 0; i < data.length; i += step) {
+    if (data[i+3] < 20) continue;
     const r = (data[i]   >> 3) & 0x1f;
     const g = (data[i+1] >> 3) & 0x1f;
     const b = (data[i+2] >> 3) & 0x1f;
     cubos.add((r << 10) | (g << 5) | b);
   }
-  const unicos = cubos.size;
 
-  // Mapear a cantidad práctica: de 8 a 64
-  let colores;
-  if (unicos <= 4)   colores = 4;
-  else if (unicos <= 8)  colores = 8;
-  else if (unicos <= 16) colores = 12;
-  else if (unicos <= 32) colores = 16;
-  else if (unicos <= 64) colores = 24;
-  else if (unicos <= 128)colores = 32;
-  else if (unicos <= 256)colores = 48;
-  else                   colores = 64;
+  const u = cubos.size;
+  let n;
+  if (u <= 3)   n = 3;
+  else if (u <= 6)   n = 6;
+  else if (u <= 12)  n = 10;
+  else if (u <= 24)  n = 14;
+  else if (u <= 50)  n = 20;
+  else if (u <= 100) n = 28;
+  else if (u <= 200) n = 36;
+  else if (u <= 400) n = 48;
+  else               n = 64;
 
-  return colores;
+  return Math.min(n, modoMax);
 }
 
-// ─── VECTORIZAR ──────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+//  VECTORIZACIÓN PRINCIPAL
+// ──────────────────────────────────────────────────────────────
 async function iniciarVect() {
   if (!origFile || !origImgEl) return;
 
   btnVect.disabled = true;
-  progWrap.classList.add('on');
-  prevPanel.classList.remove('on');
-  dlRow.classList.remove('on');
+  compareOuter.classList.remove('vis');
+  dlBar.classList.remove('vis');
+  progPanel.classList.add('vis');
 
   const PASOS = [
-    [5,  'Preparando canvas…'],
-    [18, 'Analizando paleta de colores…'],
-    [34, 'Eliminando fondo…'],
+    [5,  'Preparando imagen…'],
+    [15, 'Aplicando sharpening de bordes…'],
+    [30, 'Detectando paleta óptima…'],
     [50, 'Trazando contornos…'],
-    [66, 'Suavizando curvas Bézier…'],
-    [80, 'Optimizando paths…'],
-    [92, 'Construyendo SVG…'],
+    [68, 'Suavizando curvas Bézier…'],
+    [82, 'Optimizando paths SVG…'],
+    [94, 'Finalizando…'],
     [100,'¡Listo!'],
   ];
   let idx = 0;
   const iv = setInterval(() => {
     if (idx < PASOS.length) { setProgreso(PASOS[idx][0], PASOS[idx][1]); idx++; }
-  }, 500);
+  }, 540);
 
   try {
     const svg = await vectorizar();
-    clearInterval(iv); setProgreso(100, '¡Listo!');
-    await wait(350);
-    progWrap.classList.remove('on');
 
-    // Mostrar SVG en preview
-    svgCanvas.innerHTML = svg;
-    const svgEl = svgCanvas.querySelector('svg');
+    clearInterval(iv); setProgreso(100, '¡Listo!');
+    await wait(360);
+    progPanel.classList.remove('vis');
+
+    // Poner SVG en comparador
+    cmpSvg.innerHTML = svg;
+    const svgEl = cmpSvg.querySelector('svg');
     if (svgEl) {
       svgEl.style.maxWidth = '100%';
       svgEl.style.maxHeight = '100%';
       svgEl.removeAttribute('width');
       svgEl.removeAttribute('height');
+      svgEl.style.position = 'relative';
+      svgEl.style.zIndex = '1';
     }
 
-    // URL de descarga
+    // Mover handle al 50% para que se vea la comparación
+    actualizarComparador(50);
+
+    // Blob para descarga
     if (svgUrl) URL.revokeObjectURL(svgUrl);
     const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
     svgUrl = URL.createObjectURL(blob);
+    svgResult = svg;
+
     const kb = Math.round(blob.size / 1024);
-
-    svgBadge.textContent = `SVG · ${kb} KB`;
-    svgBadge.className = 'prev-badge gold';
     dlName.textContent = fileBase + '.svg';
-    dlMeta.textContent = `SVG · ${kb} KB · ${origImgEl.width}×${origImgEl.height}`;
+    dlMeta.textContent = `SVG · ${kb} KB · ${origImgEl.width}×${origImgEl.height}px`;
 
-    prevPanel.classList.add('on');
-    dlRow.classList.add('on');
+    compareOuter.classList.add('vis');
+    dlBar.classList.add('vis');
     btnVect.disabled = false;
-    toast('★ ¡Vector listo! Descargalo con el botón dorado.', 'gold');
+    toast('★ ¡Vector listo! Arrastrá el slider para comparar.', 'gold');
 
   } catch (err) {
     clearInterval(iv);
-    progWrap.classList.remove('on');
-    prevPanel.classList.add('on');
+    progPanel.classList.remove('vis');
+    compareOuter.classList.add('vis');
     btnVect.disabled = false;
     toast('Error al vectorizar. Probá con otra imagen.', 'err');
     console.error(err);
   }
 }
 
+// ──────────────────────────────────────────────────────────────
+//  CORE: preparar canvas + sharpen + trazar SVG
+// ──────────────────────────────────────────────────────────────
 function vectorizar() {
   return new Promise((resolve, reject) => {
     try {
-      const img = origImgEl;
+      const modo = MODOS[modoActual];
+      const img  = origImgEl;
 
-      // Escala de trabajo: hasta 1400px sin perder fidelidad
-      const MAX = 1400;
+      // Resolución óptima de trabajo
+      const MAX = modoActual === 'logo' ? 1800 : 1400;
       let w = img.width, h = img.height;
+
       if (w > MAX || h > MAX) {
-        const r = Math.min(MAX / w, MAX / h);
-        w = Math.round(w * r); h = Math.round(h * r);
+        const r = Math.min(MAX/w, MAX/h);
+        w = Math.round(w*r); h = Math.round(h*r);
       }
-      // Upscale para imágenes muy pequeñas (logos, íconos)
-      if (Math.max(w, h) < 400) {
-        const r = 400 / Math.max(w, h);
-        w = Math.round(w * r); h = Math.round(h * r);
+      // Upscale de imágenes pequeñas para mejor detalle
+      const MIN = 500;
+      if (Math.max(w, h) < MIN) {
+        const r = MIN / Math.max(w, h);
+        w = Math.round(w*r); h = Math.round(h*r);
       }
 
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       const ctx = canvas.getContext('2d');
 
-      // Blur previo en canvas (más suave que en ImageTracer)
-      const blurVal = +sBlur.value;
-      if (blurVal > 0) ctx.filter = `blur(${blurVal * 0.7}px)`;
-
       // Fondo
-      if (!fondoTransparente) {
+      if (!fondoTrans) {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, w, h);
       }
 
+      // Dibujar imagen escalada
       ctx.drawImage(img, 0, 0, w, h);
-      ctx.filter = 'none';
 
-      // ── Detección automática de colores ──────────────────────
-      let numColores = +sColores.value;
-      if (numColores === 0) {
-        numColores = detectarColoresOptimos(ctx, w, h);
+      // Obtener ImageData y aplicar SHARPENING
+      let imageData = ctx.getImageData(0, 0, w, h);
+      imageData = sharpenImageData(imageData, modo.sharpAmt);
+
+      // Determinar número de colores
+      let numCol = +sColores.value;
+      if (numCol === 0) {
+        numCol = autoColores(imageData, modo.maxCol);
+      } else {
+        numCol = Math.min(numCol, modo.maxCol);
       }
 
-      // ── Parámetros de suavidad ────────────────────────────────
-      const suave = +sSuave.value;
-      // suave 1=baja 2=media 3=alta
-      // ltres/qtres: valores MÁS BAJOS = curvas más suaves
-      const LT = suave === 1 ? 0.8 : suave === 2 ? 0.3 : 0.1;
-      const QT = suave === 1 ? 0.8 : suave === 2 ? 0.3 : 0.08;
-
-      const imageData = ctx.getImageData(0, 0, w, h);
-
+      // Parámetros finales para ImageTracer
       const opts = {
-        // Colores
-        numberofcolors:   numColores,
-        mincolorratio:    0.008,   // captura colores minoritarios
-        colorquantcycles: 5,       // más ciclos = mejor cuantización
+        // ── Colores ──────────────────────────────────
+        numberofcolors:   numCol,
+        mincolorratio:    modo.mcr,
+        colorquantcycles: modo.cycles,
 
-        // Suavidad de trazado (los más importantes)
-        ltres:  LT,   // umbral de simplificación de líneas
-        qtres:  QT,   // umbral de curvatura Bézier
-        pathomit: 4,  // omite paths < 4 píxeles (elimina basura)
+        // ── Suavidad de bordes (clave) ───────────────
+        ltres:  modo.ltres,   // tolerancia línea
+        qtres:  modo.qtres,   // tolerancia curvatura Bézier
+        pathomit: modo.omit,  // omitir paths pequeños (ruido)
 
-        // Calidad extra
-        rightangleenhance: true,   // mejora esquinas rectas
-        strokewidth:       0,      // sin trazo (solo relleno)
-        linefilter:        false,  // no filtrar líneas
-        blurradius:        0,      // blur ya aplicado en canvas
-        blurdelta:         20,
+        // ── Calidad extra ────────────────────────────
+        rightangleenhance: modoActual === 'logo', // solo en logos
+        strokewidth:  0,
+        linefilter:   false,
+        blurradius:   0,
+        blurdelta:    20,
 
-        // SVG
+        // ── SVG output ───────────────────────────────
         desc:    false,
         viewbox: true,
         scale:   1,
         layering: 0,
       };
 
+      // Ejecutar en próximo tick (permite que el progreso se actualice)
       setTimeout(() => {
         try {
           const svgStr = ImageTracer.imagedataToSVG(imageData, opts);
@@ -1295,22 +1560,24 @@ function vectorizar() {
   });
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+//  HELPERS
+// ──────────────────────────────────────────────────────────────
 function setProgreso(pct, txt) {
   progFill.style.width  = pct + '%';
-  progTxt.textContent   = txt;
+  progStep.textContent  = txt;
   progPct.textContent   = pct + '%';
 }
 
 function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-let _tt = null;
+let _toastTimer = null;
 function toast(msg, tipo = '') {
-  const el = $('toast');
+  const el = G('toast');
   el.textContent = msg;
-  el.className = 'toast on ' + tipo;
-  clearTimeout(_tt);
-  _tt = setTimeout(() => el.classList.remove('on'), 4000);
+  el.className = 'toast vis ' + tipo;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('vis'), 4200);
 }
 </script>
 </body>
